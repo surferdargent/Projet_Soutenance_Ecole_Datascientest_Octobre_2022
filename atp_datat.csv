@@ -1,0 +1,22 @@
+ATP,Location,Tournament,Date,Series,Court,Surface,Round,Best of,Winner,Loser,WRank,LRank,Wsets,Lsets,Comment,PSW,PSL,B365W,B365L,elo_winner,elo_loser,proba_elo
+66,London,Masters Cup,2015-11-19,Masters Cup,Indoor,Hard,Round Robin,3,Federer R.,Nishikori K.,3,8,2.0,1.0,Completed,1.18,5.63,1.14,5.5,2186.972677877508,1940.0536235105212,0.8055547180966192
+66,London,Masters Cup,2015-11-20,Masters Cup,Indoor,Hard,Round Robin,3,Nadal R.,Ferrer D.,5,7,2.0,1.0,Completed,1.24,4.57,1.2,4.5,2083.2374591254325,1974.0704477971083,0.6521301702642333
+66,London,Masters Cup,2015-11-20,Masters Cup,Indoor,Hard,Round Robin,3,Wawrinka S.,Murray A.,4,2,2.0,0.0,Completed,2.34,1.68,2.3,1.61,1995.1000019930946,2137.994264255181,0.3052193479624206
+66,London,Masters Cup,2015-11-21,Masters Cup,Indoor,Hard,Semifinals,3,Djokovic N.,Nadal R.,1,5,2.0,0.0,Completed,1.22,4.92,1.2,4.5,2347.151926825684,2094.369293676977,0.8107872747374207
+66,London,Masters Cup,2015-11-21,Masters Cup,Indoor,Hard,Semifinals,3,Federer R.,Wawrinka S.,3,4,2.0,0.0,Completed,1.3,4.01,1.3,3.5,2193.1949268984163,2017.332982858297,0.7334783743150053
+66,London,Masters Cup,2015-11-22,Masters Cup,Indoor,Hard,The Final,3,Djokovic N.,Federer R.,1,3,2.0,0.0,Completed,1.4,3.27,1.44,2.75,2353.2067340340864,2201.7236189203363,0.7051631218861525
+3,Doha,Qatar Exxon Mobil Open,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Haase R.,Karatsev A.,66,195,2.0,1.0,Completed,1.5,2.76,1.5,2.5,1629.8925049953045,1496.944022351901,0.6825061274068924
+3,Doha,Qatar Exxon Mobil Open,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Djokovic N.,Brown D.,1,118,2.0,0.0,Completed,1.01,24.11,1.01,21.0,2362.6415141337293,1566.5493380187143,0.9898760411216915
+2,Chennai,Chennai Open,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Coric B.,Granollers M.,44,84,2.0,1.0,Completed,1.45,2.96,1.44,2.62,1647.1692452676627,1616.7190157616535,0.5437095452904923
+3,Doha,Qatar Exxon Mobil Open,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Chardy J.,Zayid M. S.,31,1512,2.0,0.0,Completed,1.01,51.0,1.0,51.0,1702.8683883216604,1500.0,0.7627479064149864
+3,Doha,Qatar Exxon Mobil Open,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Dzumhur D.,Cecchinato M.,82,90,2.0,0.0,Completed,1.48,2.84,1.44,2.62,1553.0427427358125,1451.9939348964938,0.6414547327876237
+3,Doha,Qatar Exxon Mobil Open,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Munoz-De La Nava D.,Lopez F.,75,17,2.0,1.0,Completed,5.11,1.2,4.5,1.18,1496.5326754780995,1748.987645494364,0.18950225626276038
+3,Doha,Qatar Exxon Mobil Open,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Edmund K.,Klizan M.,102,43,2.0,0.0,Completed,1.83,2.07,1.66,2.1,1452.52699838188,1604.7727781932117,0.29392493228812766
+3,Doha,Qatar Exxon Mobil Open,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Kuznetsov An.,Ilhan M.,79,114,2.0,0.0,Completed,1.59,2.49,1.5,2.5,1529.6654803391373,1518.3824937367403,0.5162318171935133
+1,Brisbane,Brisbane International,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Dimitrov G.,Simon G.,28,15,2.0,0.0,Completed,1.68,2.31,1.66,2.1,1781.8178312362024,1816.7296112095946,0.44992632903935514
+2,Chennai,Chennai Open,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Millman J.,Donskoy E.,92,91,2.0,1.0,Completed,1.6,2.47,1.5,2.5,1520.2188810389252,1571.1335546086052,0.42724793917247
+2,Chennai,Chennai Open,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Pavic A.,Almagro N.,449,73,2.0,1.0,Completed,3.05,1.43,3.0,1.36,1461.2953769637397,1672.4447554802134,0.22873400631136834
+1,Brisbane,Brisbane International,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Chung H.,Groth S.,51,60,2.0,0.0,Completed,1.93,1.96,1.83,1.83,1574.663756250678,1594.9876267047953,0.47078491515203474
+1,Brisbane,Brisbane International,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Kamke T.,Mitchell B.,277,231,2.0,0.0,Completed,1.9,1.99,1.72,2.0,1523.2187680103061,1458.8698435335193,0.5915609894238854
+1,Brisbane,Brisbane International,2016-01-04,ATP250,Outdoor,Hard,1st Round,3,Kudla D.,Smith J.P.,69,129,2.0,1.0,Completed,1.63,2.4,1.53,2.37,1491.0091491530807,1480.2413358085628,0.515491169514886
+2,Chennai,Chennai Open,2016-01-05,ATP250,Outdoor,Hard,1st Round,3,Krajicek A.,Ram R.,104,89,2.0,1.0,Completed,2.03,1.86,2.1,1.66,1533.2198898598917,1510.4710344220014,0.5326915299534815

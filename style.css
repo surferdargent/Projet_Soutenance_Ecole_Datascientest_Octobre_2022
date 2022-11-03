@@ -1,0 +1,96 @@
+h1,
+h2,
+h3,
+h4 {
+  color: #000000;
+
+code {
+  color: #b0f2b6;
+}
+
+#MainMenu {
+  display: none;
+}
+
+div[data-testid="stDecoration"] {
+  display: none;
+}
+
+footer {
+  display: none;
+}
+
+/* Radio buttons */
+
+.st-cc {
+  color: #b0f2b6;
+  font-weight: 500;
+}
+
+/* Sidebar */
+.
+section[data-testid="stSidebar"] > div {
+  background-color: #b0f2b6;
+  padding-top: 2rem;
+  padding-left: 1.5rem;
+  color: #b0f2b6;
+}
+
+
+section[data-testid="stSidebar"] button[title="View fullscreen"] {
+  display: none;
+   color: #b0f2b6;
+}
+
+section[data-testid="stSidebar"] button[kind="icon"] {
+  display: none;
+   color: #b0f2b6;
+  
+}
+
+section[data-testid="stSidebar"] .st-bk {
+  background-color: #b0f2b6;
+   color: #b0f2b6;
+  
+  
+}
+
+section[data-testid="stSidebar"] .st-c0 {
+  background-color: #b0f2b6;
+ color: #b0f2b6;
+  
+}
+
+section[data-testid="stSidebar"] hr {
+  margin-top: 30px;
+  border-color: white;
+  width: 50px;
+
+}
+
+section[data-testid="stSidebar"] h2 {
+  color:black;
+}
+
+/* Images */
+
+ button[title="View fullscreen"] {
+  display: none;
+}
+
+
+/* hr */
+
+hr {
+  width: 400px;
+  border-width: 5px;
+  border-color: #b0f2b6;
+  margin-top: 0px;
+}
+
+/* First Page */
+
+section[tabindex="0"] .block-container {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
