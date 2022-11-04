@@ -2,7 +2,7 @@
 contributeurs Olivier Le Curieux Clerville, Frédéric Constant et Jérémy Bitton
 
 Pour la présentation Streamlit et Power Bi (pour la partie DataViz) ont été utlisés
-Lien pour ouvrir le Streamlit : # https://surferdargent-projet-soutenance-ecole-datascientest--app-nttq3y.streamlit.app/
+Lien pour ouvrir le Streamlit : https://surferdargent-projet-soutenance-ecole-datascientest--app-nttq3y.streamlit.app/
 
 L’objectif de ce projet est d’essayer de battre les algorithmes des bookmakers sur l’estimation de la probabilité d’une équipe gagnant un match.
 Le jeu de données utilisé est issu de Kaggle : https://www.kaggle.com/edouardthomas/atp-matches-dataset et représente tous les matchs homme de tennis entre 2000 et 2018
