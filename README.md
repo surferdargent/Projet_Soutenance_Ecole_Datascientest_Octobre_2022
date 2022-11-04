@@ -4,8 +4,8 @@ contributeurs Olivier Le Curieux Clerville olecurieux@gmail.com, Frédéric Cons
 Pour la présentation Streamlit et Power Bi (pour la partie DataViz) ont été utlisés.
 Lien pour ouvrir le Streamlit : https://surferdargent-projet-soutenance-ecole-datascientest--app-nttq3y.streamlit.app/
 
-L’objectif de ce projet est d’essayer de battre les algorithmes des bookmakers sur l’estimation de la probabilité d’une équipe gagnant un match.
-Le jeu de données utilisé est issu de Kaggle : https://www.kaggle.com/edouardthomas/atp-matches-dataset et représente tous les matchs homme de tennis entre 2000 et 2018
+L’objectif de ce projet est d’essayer de battre les algorithmes des bookmakers sur l’estimation de la probabilité d’un joueur de gagner un match.
+Le jeu de données utilisé est issu de Kaggle : https://www.kaggle.com/edouardthomas/atp-matches-dataset et représente tous les matchs Homme de tennis entre 2000 et 2018
 C’est un problème parfait pour traiter l’ensemble des étapes d’un projet de Data Science. 
 Première étape est d’étudier et appliquer des méthodes pour nettoyer le jeu de données. 
 Deuxième étape est d’extraire à partir de l'historique des matchs les caractéristiques qui semblent être pertinentes avec Power Bi pour estimer la performance d’un joueur (classement, winning streak …). 
