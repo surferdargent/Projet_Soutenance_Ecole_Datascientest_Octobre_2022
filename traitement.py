@@ -424,7 +424,7 @@ def split_normalisation(data,option):
         df = pd.DataFrame(list(zip(names,accuracies)), columns=['Noms', f"Scores {x}"])
       
   return df
-@st.cache(allow_output_mutation=True,suppress_st_warning=True) 
+# @st.cache(allow_output_mutation=True,suppress_st_warning=True) 
 def importance_variables():
     RandomForestClassifier(random_state=123).fit(X_train,y_train)
     fig1 = plt.figure(figsize=(14,6))
