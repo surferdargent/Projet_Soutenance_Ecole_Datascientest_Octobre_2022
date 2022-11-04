@@ -2,6 +2,7 @@
 contributeurs Olivier Le Curieux Clerville olecurieux@gmail.com, Frédéric Constant et Jérémy Bitton
 
 Pour la présentation Streamlit et Power Bi (pour la partie DataViz) ont été utlisés.
+
 Lien pour ouvrir le Streamlit : https://surferdargent-projet-soutenance-ecole-datascientest--app-nttq3y.streamlit.app/
 
 L’objectif de ce projet est d’essayer de battre les algorithmes des bookmakers sur l’estimation de la probabilité d’un joueur de gagner un match.
