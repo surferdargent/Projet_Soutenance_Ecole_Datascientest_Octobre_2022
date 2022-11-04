@@ -96,6 +96,7 @@ print(new_df)
 
 
 # Moyenne roulante stat joueurs
+@st.cache(suppress_st_warning=True,allow_output_mutation=True)
 def mean_rolling(df,x,y):
 
     new_df = df
@@ -262,7 +263,7 @@ from sklearn.ensemble import RandomForestClassifier
 # Trier les dates du dataset 
 new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
 # @st.cache(suppress_st_warning=True)
-# @st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True,suppress_st_warning=True)
 def split(data):
     df = pd.DataFrame(data)
     df = data.sort_values(by=["Year"],ascending = True)
@@ -312,7 +313,7 @@ new_y_test = pd.Series(y_test,index=None)
 # Définition du modèle
 # Exécution des modèles
 # @st.cache(suppress_st_warning=True)
-# @st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True,suppress_st_warning=True)
 def train_model():
     
      models = []
@@ -372,6 +373,7 @@ st.markdown("""
 # Fonction split et normalisation des données
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True,suppress_st_warning=True)
 def split_normalisation(data,option):
     
   df = pd.DataFrame(data)
@@ -422,7 +424,7 @@ def split_normalisation(data,option):
         df = pd.DataFrame(list(zip(names,accuracies)), columns=['Noms', f"Scores {x}"])
       
   return df
- 
+@st.cache(allow_output_mutation=True,suppress_st_warning=True) 
 def importance_variables():
     RandomForestClassifier(random_state=123).fit(X_train,y_train)
     fig1 = plt.figure(figsize=(14,6))
@@ -546,7 +548,7 @@ st.markdown("""
 
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
-
+@st.cache(allow_output_mutation=True,suppress_st_warning=True)
 def optimisation_models():
     # rid_rf = pickle.load(open(grid_rf_load_sav, 'rb'))
     # Optimisation du modèle
