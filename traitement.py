@@ -39,12 +39,12 @@ sns.set_theme()
 
 
 
-def load_data():
-    data = pd.read_csv('atp_datat.csv',parse_dates=['Date'])
-    data["Date"] = pd.to_datetime(data["Date"])
-    data['Date'] = data['Date'].dt.date
-    return data
-data = load_data()
+# def load_data():
+#     data = pd.read_csv('atp_datat.csv',parse_dates=['Date'])
+#     data["Date"] = pd.to_datetime(data["Date"])
+#     data['Date'] = data['Date'].dt.date
+#     return data
+# data = load_data()
 
 
 def predict(df):

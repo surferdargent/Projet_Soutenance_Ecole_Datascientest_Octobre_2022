@@ -148,7 +148,7 @@ def run():
         data_var_mask["Mise"] = data_var_mask["Win"] * mise_de_depart
        
         st.dataframe(data_var_mask)
-        
+        # df_lines = df.apply(np.sum ,axis = 0) 
         st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
                 
         # return st.write("La somme pariée serait de", mise2, "euros et le gain prédit de", gain2,"euros."),
