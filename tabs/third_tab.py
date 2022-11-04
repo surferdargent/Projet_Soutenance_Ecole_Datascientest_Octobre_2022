@@ -8,7 +8,7 @@ import io
 
 # import pickle
 
-from traitement import train_model,importance_variables,optimisation_models
+from traitement import train_model,importance_variables
 from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV 
 from sklearn.linear_model import LogisticRegression 
