@@ -8,7 +8,7 @@ import numpy as np
 
 from PIL import Image
 from datetime import datetime 
-
+from traitement import y_test,y_pred_rf
 
 
 
@@ -98,7 +98,7 @@ def run():
 
      
     data["Mise"] =  data['Bkm_predict_vict'] * mise_de_depart
-    data["Gain"] =  data["Mise"] * (data["B365W"] -1 )
+    data["Gain"] =  data["Mise"] * (data["B365W"]-1)
     
     st.write("La somme pariée serait de", round(data["Mise"].sum(axis=0),2), "euros et le gain prédit de", round(data["Gain"].sum(axis=0),2),"euros.")
     st.write("Soit",round( round(data["Gain"].sum(axis=0),2)/round(data["Mise"].sum(axis=0)),2)*100,"% de bénéfices.Ce gain représente la somme gagnée si nous suivons les préco du bookmaker B365.")
@@ -119,14 +119,18 @@ def run():
         """
     )
     
-    # Base pour récupérer les cotes
     
+    # Base pour récupérer les cotes
+   
     data_var = pd.read_csv('df_variables_enrichies.csv',parse_dates=['Year'])
     date_split = pd.Timestamp(2016, 1, 1)
     data_var=  data_var[data_var['Year'] >= date_split]
+   
     data_var['Year'] = pd.to_datetime(data_var['Year'])
     data_var['Year']= data_var['Year'].dt.date
-    data.reset_index(drop=True, inplace=True)
+   
+   
+    # data.reset_index(drop=True, inplace=True)
     data_var = data_var.sort_values(by=["Year"],ascending = True)
     start_date_var, end_date_var = start_date, end_date
     
@@ -142,20 +146,22 @@ def run():
     
 
     
-    def paris1(mise_de_dep=10):
+    def paris1(mise_de_dep):
         mise_de_depart = mise_de_dep
-        data_var_mask["Gains"] =data_var_mask["Win"] * mise_de_depart * (data_var_mask['B365']-1)
+        data_var_mask["Gains"]= data_var_mask["Win"] * mise_de_depart * (data_var_mask['B365']-1)
         data_var_mask["Mise"] = data_var_mask["Win"] * mise_de_depart
        
         st.dataframe(data_var_mask)
-        # df_lines = df.apply(np.sum ,axis = 0) 
-        st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
+        mise2 = data_var_mask["Mise"].sum()
+        gain2 = data_var_mask["Gains"].sum()
+        #st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
                 
-        # return st.write("La somme pariée serait de", mise2, "euros et le gain prédit de", gain2,"euros."),
-        # st.write("Soit",round( gain2/mise2,2)*100,"% de bénéfices")
+        return st.write("La somme pariée serait de", round(mise2,2), "euros et le gain prédit de", round(gain2,2),"euros."),st.write("Soit",round( gain2/mise2,2)*100,"% de bénéfices")
         
-    paris1()
+    paris1(mise_de_depart)
     
+   
+
     # Option 3 : stratégie 
     
     st.markdown(
@@ -172,11 +178,11 @@ def run():
         d’une mise aux situations dans lesquels le modèle à une confiance de plus de 80% dans sa
         prédiction. Cette stratégie, que l’on peut qualifier de prudente, vise à minimiser les risques
         et diminuer le montant des sommes engagées.
-         La somme pariée serait de 20600 euros et le gain prédit de 7843 euros.Soit 38.0 % de bénéfices. 
+        La somme pariée serait de 20600 euros et le gain prédit de 7843 euros.Soit 38.0 % de bénéfices. 
          
          
          La dernière stratégie serait la plus optimale car le bénéfice est de 38,0 % légèrement supérieur au bénéfice des préconisations bookmakers ( 36,0 %) 
-         Surtout la somme engagée pour la dernière stratégie est de 20600 euros contre 40970 euros si on suit les préconisations bookmakersNotre stratégie battrait les bookmakers ...""")
+         Surtout la somme engagée pour la dernière stratégie est de 20600 euros contre 40970 euros si on suit les préconisations bookmakers.Notre stratégie battrait les bookmakers ...""")
       
     
     """

@@ -1,10 +1,11 @@
 import streamlit as st
+import config
 st.set_page_config(
-    page_title="Paris Sportif Tennis",
+    page_title=config.TITLE,
     #page_icon="https://datascientest.com/wp-content/uploads/2020/03/cropped-favicon-datascientest-1-32x32.png",
 )
 
-import config
+
 from collections import OrderedDict
 
 from tabs import intro, second_tab, third_tab,fourth_tab
@@ -38,7 +39,7 @@ def run():
         width=200,
     )
     
-    # st.write("Battre les Bookmakers Tennis ?")
+    #st.write("Battre les Bookmakers Tennis ?")
     tab_name = st.sidebar.radio("", list(TABS.keys()), 0)
     st.sidebar.markdown("---")
     st.sidebar.markdown(f"## {config.PROMOTION}")
@@ -50,7 +51,7 @@ def run():
     tab = TABS[tab_name]
 
     tab.run()
-    st.sidebar.markdown("Sous le tutorat de Gaspard Grimm")
+    st.sidebar.markdown("Sous le tutorat de *Gaspard Grimm*")
 
 if __name__ == "__main__":
     run()

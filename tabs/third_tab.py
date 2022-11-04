@@ -233,27 +233,27 @@ def run():
 
 
     # Exécution des modèles
-    # @st.cache(suppress_st_warning=True)
-    # def train_model():
+    @st.cache(suppress_st_warning=True)
+    def train_model():
        
-    #     models = []
-    #     models.append(('Logistic Regression',LogisticRegression(random_state=123)))
-    #     models.append(('KNeighbors', KNeighborsClassifier()))
-    #     models.append(('Random Forest', RandomForestClassifier(random_state=123)))
-    #     accuracies = []
-    #     names = []
+        models = []
+        models.append(('Logistic Regression',LogisticRegression(random_state=123)))
+        models.append(('KNeighbors', KNeighborsClassifier()))
+        models.append(('Random Forest', RandomForestClassifier(random_state=123)))
+        accuracies = []
+        names = []
         
-    #     for name, model in models:
-    #         model.fit(X_train,y_train)
-    #         accuracy = model.score(X_test,y_test)
-    #         accuracies.append(accuracy)
-    #         names.append(name)
-    #         msg = "Résultat pour %s: %f" % (name, accuracy)
-    #         st.write(msg)
-    #     fig = plt.figure()
-    #     sns.barplot(names, accuracies)
-    #     plt.show()
-    #     return fig
+        for name, model in models:
+            model.fit(X_train,y_train)
+            accuracy = model.score(X_test,y_test)
+            accuracies.append(accuracy)
+            names.append(name)
+            msg = "Résultat pour %s: %f" % (name, accuracy)
+            st.write(msg)
+        fig = plt.figure()
+        sns.barplot(names, accuracies)
+        plt.show()
+        return fig
             
 
     st.pyplot(train_model())
@@ -507,7 +507,7 @@ def run():
         rap_classif = 'Rapport de classification:\n ' + classification_report(y_test, y_pred_rf)
         return   y_pred_rf,grid_rf,best_param,score_rf,rap_classif
 
-    y_pred_rf,grid_rf,best_param,score_rf,rap_classif = optimisation_models()
+    y_pred_rf,grid_rf,best_param,score_rf,rap_classif= optimisation_models()
 
     if st.button('Hyperparamètres',key=15):
            

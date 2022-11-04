@@ -15,8 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import seaborn as sns
 import io   
-# import pickle
-# import wget
+
 from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV 
 from sklearn.linear_model import LogisticRegression 
@@ -118,6 +117,7 @@ def mean_rolling(df,x,y):
 # 6 et 18 seront les mois choisis pour la fonction
 new_df = mean_rolling(new_df,6,18)
 new_df = new_df.sort_values(by=["Year"],ascending = True).reset_index(drop= True)
+
 new_df["Year"] = pd.to_datetime(new_df["Year"])
 new_df["Year"]= new_df["Year"].dt.date
 
@@ -424,7 +424,7 @@ def split_normalisation(data,option):
         df = pd.DataFrame(list(zip(names,accuracies)), columns=['Noms', f"Scores {x}"])
       
   return df
-@st.cache(allow_output_mutation=True,suppress_st_warning=True) 
+# @st.cache(allow_output_mutation=True,suppress_st_warning=True) 
 def importance_variables():
     RandomForestClassifier(random_state=123).fit(X_train,y_train)
     fig1 = plt.figure(figsize=(14,6))
@@ -539,15 +539,12 @@ st.markdown("""
         - L'optimisation
           """)
  
-# rf_loaded = pickle.load(open('.\models\Random Forest.sav', 'rb'))
-# grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))   
+   
 
 
 
 
 
-# @st.cache(suppress_st_warning=True)
-# @st.cache(allow_output_mutation=True)
 @st.cache(allow_output_mutation=True,suppress_st_warning=True)
 def optimisation_models():
     # rid_rf = pickle.load(open(grid_rf_load_sav, 'rb'))
@@ -654,9 +651,10 @@ st.dataframe(data)
 data_var = pd.read_csv('df_variables_enrichies.csv',parse_dates=['Year'])
 date_split = pd.Timestamp(2016, 1, 1)
 data_var=  data_var[data_var['Year'] >= date_split]
+
 data_var['Year'] = pd.to_datetime(data_var['Year'])
 data_var['Year']= data_var['Year'].dt.date
-data.reset_index(drop=True, inplace=True)
+
 data_var = data_var.sort_values(by=["Year"],ascending = True)
 start_date_var, end_date_var = start_date, end_date
 
@@ -669,10 +667,31 @@ else:
 
 mask_var = (data_var['Year'] >= start_date_var) & (data_var['Year'] <= end_date_var)
 data_var_mask = data_var.loc[mask_var]
+# data_prev = pd.DataFrame()
+# data_prev[['y_pred_rf']] = y_pred_rf
+# st.write(data_prev)
+# Deuxième stratégie
+
+#combined_df = pd.concat([df1, df2, df3], axis=1)
+# Avec vos DF :
+
+# st.write(y_test)
+# y_pred_rf1 = pd.DataFrame(y_pred_rf,columns=["Prediction_modelss"])
+# y_test1 = pd.DataFrame(y_test,columns=["Victoire_reelle"])
+# combined_df = pd.concat([ y_pred_rf1,y_test1], axis=1) 
+
+
+
+base = pd.DataFrame()
+base["actual"] = y_test
+base["predictions"] = y_pred_rf
+st.write(base)
 
 
 # grid_rf = pickle.load(open(grid_rf_load_sav, 'rb'))
 probs = grid_rf.predict_proba(X_test)
+
+
 
 def paris2(gain = 0,mise_totale = 0 , mise_de_depart =  mise_de_depart , seuil = 0.8 ):
     y_pred_proba = probs
@@ -691,4 +710,7 @@ st.markdown("""La dernière stratégie serait la plus optimale car le bénéfice
 
 
  
-
+# pred_prob = model.predict(X_test) # calculate prediction probabilities
+# pred_class  = np.where(pred_prob >0.5, "Yes", "No") #for binary(Yes/No) category
+# predictions = pd.DataFrame(pred_class, columns=['Prediction'])
+# my_new_df = pd.concat([my_old_df, predictions], axis =1)
