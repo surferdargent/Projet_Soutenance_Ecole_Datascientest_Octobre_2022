@@ -8,7 +8,7 @@ import numpy as np
 
 from PIL import Image
 from datetime import datetime 
-from traitement import y_test,y_pred_rf
+from traitement import y_test,X_test,y_pred_rf,probs
 
 
 
@@ -100,9 +100,8 @@ def run():
     data["Mise"] =  data['Bkm_predict_vict'] * mise_de_depart
     data["Gain"] =  data["Mise"] * (data["B365W"]-1)
     
-    st.write("La somme pariée serait de", round(data["Mise"].sum(axis=0),2), "euros et le gain prédit de", round(data["Gain"].sum(axis=0),2),"euros.")
-    st.write("Soit",round( round(data["Gain"].sum(axis=0),2)/round(data["Mise"].sum(axis=0)),2)*100,"% de bénéfices.Ce gain représente la somme gagnée si nous suivons les préco du bookmaker B365.")
-    
+    st.write("La somme pariée serait de", round(data["Mise"].sum(axis=0),2), "euros et le gain prédit de", round(data["Gain"].sum(axis=0),2),"euros.Soit",round( round(data["Gain"].sum(axis=0),2)/round(data["Mise"].sum(axis=0)),2)*100,"% de bénéfices.Ce gain représente la somme gagnée si nous suivons les préco du bookmaker B365")
+
 
     # Option 2 : stratégie avec pari uniquement sur la prédiction du modèle pour les gagnants 
 
@@ -132,13 +131,20 @@ def run():
    
     # data.reset_index(drop=True, inplace=True)
     data_var = data_var.sort_values(by=["Year"],ascending = True)
+    data_var.reset_index(inplace=True, drop=False)
+    data_var["Prédictions_Algo"] = y_pred_rf
+    first_column = data_var.pop("Prédictions_Algo")
+      
+    # insert column using insert(position,column_name,first_column) function
+    data_var.insert(0, "Prédictions_Algo", first_column)
+  
     start_date_var, end_date_var = start_date, end_date
     
     if start_date_var < end_date_var:
         pass
     
     else:
-        st.error('Error: Date de fin doit être choisi après la date de début.')
+        st.error('Erreur: Date de fin doit être choisi après la date de début.')
     
   
     mask_var = (data_var['Year'] >= start_date_var) & (data_var['Year'] <= end_date_var)
@@ -146,19 +152,25 @@ def run():
     
 
     
-    def paris1(mise_de_dep):
+    def paris1(mise_de_dep,data_var_mask):
         mise_de_depart = mise_de_dep
-        data_var_mask["Gains"]= data_var_mask["Win"] * mise_de_depart * (data_var_mask['B365']-1)
-        data_var_mask["Mise"] = data_var_mask["Win"] * mise_de_depart
-       
-        st.dataframe(data_var_mask)
-        mise2 = data_var_mask["Mise"].sum()
-        gain2 = data_var_mask["Gains"].sum()
-        #st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
-                
-        return st.write("La somme pariée serait de", round(mise2,2), "euros et le gain prédit de", round(gain2,2),"euros."),st.write("Soit",round( gain2/mise2,2)*100,"% de bénéfices")
         
-    paris1(mise_de_depart)
+        data_var_mask["Gains"]= data_var_mask["Prédictions_Algo"] * mise_de_depart * (data_var_mask['B365']-1)
+        
+        
+        data_var_mask["Mise"] = data_var_mask["Prédictions_Algo"] * mise_de_depart
+        second_column = data_var_mask.pop("Mise")
+        data_var_mask.insert(1, "Mise", second_column)
+        
+        third_column = data_var_mask.pop("Gains")
+        data_var_mask.insert(2, "Gains", third_column)
+       
+        #st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
+        
+        st.dataframe(data_var_mask)      
+        return st.write("La somme pariée serait de", round(data_var_mask["Mise"].sum(),2), "euros et le gain prédit de", round(data_var_mask["Gains"].sum(),2),"euros."),st.write("Soit",round( (data_var_mask["Gains"].sum()-data_var_mask["Mise"].sum())/data_var_mask["Mise"].sum(),2)*100,"% de bénéfices")
+        
+    paris1(mise_de_depart,data_var_mask)
     
    
 
@@ -170,6 +182,9 @@ def run():
         """
     )
     
+    
+    
+    
     st.markdown(
         """
         Stratégie de sélection des mises appuyées sur les prédictions de notre modèle
@@ -178,74 +193,88 @@ def run():
         d’une mise aux situations dans lesquels le modèle à une confiance de plus de 80% dans sa
         prédiction. Cette stratégie, que l’on peut qualifier de prudente, vise à minimiser les risques
         et diminuer le montant des sommes engagées.
+       """)
+         
+    data_var_mask['Prob de perdre'] = probs[:,0] 
+    data_var_mask['Prob de gagner'] = probs[:,1]
+    fourth_column = data_var_mask.pop("Prob de perdre")
+    data_var_mask.insert(3, "Prob de perdre", fourth_column)
+    
+    five_column = data_var_mask.pop("Prob de gagner")
+    data_var_mask.insert(4, "Prob de gagner", five_column)
+   
+    st.write(data_var_mask)
+     
+    st.markdown(
+        """
+     
         La somme pariée serait de 20600 euros et le gain prédit de 7843 euros.Soit 38.0 % de bénéfices. 
          
          
          La dernière stratégie serait la plus optimale car le bénéfice est de 38,0 % légèrement supérieur au bénéfice des préconisations bookmakers ( 36,0 %) 
-         Surtout la somme engagée pour la dernière stratégie est de 20600 euros contre 40970 euros si on suit les préconisations bookmakers.Notre stratégie battrait les bookmakers ...""")
+         Surtout la somme engagée pour la dernière stratégie est de 20600 euros contre 40970 euros si on suit les préconisations bookmakers.Notre stratégie battrait les bookmakers ...""")    
+         
+       # prediction_of_probability = clf.predict_proba(X_test)  
+
       
     
-    """
-    Pour le test nous allons prendre les 10 derniers joueurs de notre jeu de test et appliquer notre  stratégie 
+    # """
+    # Pour le test nous allons prendre les 10 derniers joueurs de notre jeu de test et appliquer notre  stratégie 
             
-    """   
+    # """   
     
   
-    @st.cache()   
-    def demo(taux,mse_depart ):
-        #list_proba = []
+    # @st.cache()   
+    # def demo(taux,mse_depart ):
+    #     #list_proba = []
         
-        # gain = 0
-        # mise_totale = 0,
-        # mise_de_depart = mse_depart
-        # seuil = taux
-        # # y_pred_proba = probs
-        # for i,probas in enumerate (y_pred_proba):
-        #     cotes = data_var['B365'].iloc[i]
-        #     if probas[1] >= seuil :
+    #     # gain = 0
+    #     # mise_totale = 0,
+    #     # mise_de_depart = mse_depart
+    #     # seuil = taux
+    #     # # y_pred_proba = probs
+    #     # for i,probas in enumerate (y_pred_proba):
+    #     #     cotes = data_var['B365'].iloc[i]
+    #     #     if probas[1] >= seuil :
                 
-        #         if y_test.iloc[i]== 1:
-        #             gain += round((mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil )) * (cotes - 1))
-        #         mise_totale += round(mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil ))
-    #     #st.write("La somme pariée serait de", mise_totale, "euros et le gain prédit de", gain,"euros.")
-    #     #st.write("Soit",round( gain/mise_totale,2)*100,"% de bénéfices")
-    #     ###return proba[1],
+    #     #         if y_test.iloc[i]== 1:
+    #     #             gain += round((mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil )) * (cotes - 1))
+    #     #         mise_totale += round(mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil ))
+    # #     #st.write("La somme pariée serait de", mise_totale, "euros et le gain prédit de", gain,"euros.")
+    # #     #st.write("Soit",round( gain/mise_totale,2)*100,"% de bénéfices")
+    # #     ###return proba[1],
     
     
-     _left, _right = st.columns(2)
+    #  _left, _right = st.columns(2)
     
-     with _left:
-        taux  = st.number_input('Sélectionner un taux entre 51 et 100 %',51,100,51,key=5)
-        mse_depart = st.number_input('Sélectionner votre mise de départ',1,20000,10,key=3)
+    #  with _left:
+    #     taux  = st.number_input('Sélectionner un taux entre 51 et 100 %',51,100,51,key=5)
+    #     mse_depart = st.number_input('Sélectionner votre mise de départ',1,20000,10,key=3)
     
-     with _left:
-        if st.button('Lancer la démo'):
-            demo(taux,mse_depart)
-            st.markdown("""
-                      """)       
+    #  with _left:
+    #     if st.button('Lancer la démo'):
+    #         demo(taux,mse_depart)
+    #         st.markdown("""
+    #                   """)       
 
     
-    st.markdown("---")
+st.markdown("---")
     
-    st. markdown(
+st. markdown(
         
             """
             ## Conclusion
             
             """
         )
-    st.markdown(
+st.markdown(
     """
         Au terme de notre projet, nous avons pu entraîner un modèle de prévision des résultats des
         matchs, plus performant que les prédictions des bookmakers. La qualité de cette information nous a permis de développer une stratégie de paris maximisant nos gains,
-        par rapport à une situation dans laquelle nous n’aurions pas été en mesure de prédire avec une
-        confiance suffisante.
-        Avec davantage de temps et forts de l’expérience acquise lors du projet, il nous apparaît
-        aujourd’hui que nous aurions pu explorer davantage la piste suivante.Lors de la phase exploratoire des données 
+        par rapport à une situation dans laquelle nous n’aurions pas été en mesure de prédire avec une confiance suffisante.
+        Avec davantage de temps et forts de l’expérience acquise lors du projet, il nous apparaît aujourd’hui que nous aurions pu explorer davantage la piste suivante.Lors de la phase exploratoire des données 
         nous avons produit deux types de statistiques qui auraient pu éventuellement servir à élaborer une stratégie de paris plus efficace.
-        Nous aurions ainsi pu établir d’une part des statistiques de performance des joueurs selon
-         d’autres paramètres (surface, tournoi, adversaire...), et d’autre part identifier les types de
-        matchs pour lesquels les pronostics des bookmakers sont moins performants. Cela aurait
+        Nous aurions ainsi pu établir d’une part des statistiques de performance des joueurs selon d’autres paramètres (surface, tournoi, adversaire...), et d’autre part identifier les types de matchs pour lesquels les pronostics des bookmakers sont moins performants. Cela aurait
         pu nous permettre de mener des stratégies de niche exploitant les défaillances des
         bookmakers.
     """

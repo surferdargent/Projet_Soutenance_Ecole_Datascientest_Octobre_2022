@@ -169,7 +169,7 @@ with col2:
             _*Action*_
             """
             )
-st.markdown(""" Toutes les variables de type "object" devront être encodées ...""")
+    st.markdown(""" Toutes les variables de type "object" devront être encodées ...""")
  
 st.markdown(
   """
@@ -313,7 +313,7 @@ new_y_test = pd.Series(y_test,index=None)
 # Définition du modèle
 # Exécution des modèles
 # @st.cache(suppress_st_warning=True)
-@st.cache(allow_output_mutation=True,suppress_st_warning=True)
+# @st.cache(allow_output_mutation=True,suppress_st_warning=True)
 def train_model():
     
      models = []
@@ -656,6 +656,11 @@ data_var['Year'] = pd.to_datetime(data_var['Year'])
 data_var['Year']= data_var['Year'].dt.date
 
 data_var = data_var.sort_values(by=["Year"],ascending = True)
+data_var.reset_index(inplace=True, drop=False)
+data_var["Prédictions_Algo"] = y_pred_rf
+
+
+# df.insert(0, 'newColMean', df.mean(1))
 start_date_var, end_date_var = start_date, end_date
 
 if start_date_var < end_date_var:
@@ -667,31 +672,36 @@ else:
 
 mask_var = (data_var['Year'] >= start_date_var) & (data_var['Year'] <= end_date_var)
 data_var_mask = data_var.loc[mask_var]
-# data_prev = pd.DataFrame()
-# data_prev[['y_pred_rf']] = y_pred_rf
-# st.write(data_prev)
-# Deuxième stratégie
 
-#combined_df = pd.concat([df1, df2, df3], axis=1)
-# Avec vos DF :
+def paris1(mise_de_dep):
+    mise_de_depart = mise_de_dep
+    data_var_mask["Gains"]= data_var_mask["Prédictions_Algo"] * mise_de_depart * (data_var_mask['B365']-1)
+    
+    
+    data_var_mask["Mise"] = data_var_mask["Prédictions_Algo"] * mise_de_depart
+    second_column = data_var_mask.pop("Mise")
+    data_var_mask.insert(1, "Mise", second_column)
+    
+    third_column = data_var_mask.pop("Gains")
+    data_var_mask.insert(2, "Gains", third_column)
+    mise2 = data_var_mask["Mise"].sum()
+    gain2 = data_var_mask["Gains"].sum()
+    st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
+    
+    st.dataframe(data_var_mask)      
+    return 
 
-# st.write(y_test)
-# y_pred_rf1 = pd.DataFrame(y_pred_rf,columns=["Prediction_modelss"])
-# y_test1 = pd.DataFrame(y_test,columns=["Victoire_reelle"])
-# combined_df = pd.concat([ y_pred_rf1,y_test1], axis=1) 
-
-
-
-base = pd.DataFrame()
-base["actual"] = y_test
-base["predictions"] = y_pred_rf
-st.write(base)
-
-
-# grid_rf = pickle.load(open(grid_rf_load_sav, 'rb'))
 probs = grid_rf.predict_proba(X_test)
+# df_test = pd.DataFrame(X_test)
+# df_test['Target'] = y_test
 
 
+
+# df_test = pd.DataFrame(X_test)
+# df_test['Target'] = y_test
+# df_test['prob_0'] = probs[:,0] 
+# df_test['prob_1'] = probs[:,1]
+# st.write(df_test)
 
 def paris2(gain = 0,mise_totale = 0 , mise_de_depart =  mise_de_depart , seuil = 0.8 ):
     y_pred_proba = probs
