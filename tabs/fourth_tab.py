@@ -8,7 +8,7 @@ import numpy as np
 
 from PIL import Image
 from datetime import datetime 
-from traitement import y_test,X_test,y_pred_rf,probs
+from traitement import y_pred_rf,probs
 
 
 
