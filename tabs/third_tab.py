@@ -8,7 +8,7 @@ import io
 
 # import pickle
 
-from traitement import importance_variables,train_model
+from traitement import importance_variables
 from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV 
 from sklearn.linear_model import LogisticRegression 
@@ -251,7 +251,7 @@ def run():
             msg = "Résultat pour %s: %f" % (name, accuracy)
             st.write(msg)
         fig = plt.figure()
-        sns.barplot(names, accuracies)
+        plt.bar(names, accuracies)
         plt.show()
         return fig
             
