@@ -18,5 +18,3 @@ Bibliographie
 Liste des papiers / blogpost / repo github relatif au projet.
 https://towardsdatascience.com/making-big-bucks-with-a-data-driven-sports-betting-strategy-6c21a6869171
 https://www.researchgate.net/publication/331218530_Exploiting_sports-betting_market_using_machine_learning
-
-
