@@ -202,7 +202,7 @@ def run():
     new_df["Year"] = pd.to_datetime(new_df["Year"])
     new_df["Year"]= new_df["Year"].dt.date
     players = new_df['Player'].unique()
-    players_choice = st.selectbox('Sélectionner un joueur:', players)
+    players_choice = st.selectbox('Sélectionner un joueur:', players,key=20)
     years = new_df["Year"].loc[new_df["Player"] == players_choice]
     year_choice = st.selectbox('Sélectionner une date', years) 
     st.write('Resultat de la recherche:',new_df.loc[(new_df["Player"] == players_choice)&(new_df["Year"] == year_choice)])

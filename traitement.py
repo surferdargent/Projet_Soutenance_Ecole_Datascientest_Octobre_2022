@@ -314,8 +314,7 @@ new_y_test = pd.Series(y_test,index=None)
 # Définition du modèle
 # Exécution des modèles
 # @st.cache(suppress_st_warning=True)
-# @st.cache(allow_output_mutation=True,suppress_st_warning=True)
-@st.experimental_memo
+@st.cache(allow_output_mutation=True,suppress_st_warning=True)
 def train_model():
     
      models = []
