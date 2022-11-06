@@ -8,7 +8,7 @@ import io
 
 # import pickle
 
-from traitement import importance_variables
+from traitement import importance_variables,train_model
 from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV 
 from sklearn.linear_model import LogisticRegression 
@@ -233,7 +233,7 @@ def run():
 
 
     # Exécution des modèles
-    @st.cache(suppress_st_warning=True,allow_output_mutation=True)
+    # @st.cache(suppress_st_warning=True,allow_output_mutation=True)
     def train_model():
        
         models = []
