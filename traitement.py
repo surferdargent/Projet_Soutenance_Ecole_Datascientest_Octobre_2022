@@ -263,7 +263,8 @@ from sklearn.ensemble import RandomForestClassifier
 # Trier les dates du dataset 
 new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
 # @st.cache(suppress_st_warning=True)
-@st.cache(allow_output_mutation=True,suppress_st_warning=True)
+# @st.cache(allow_output_mutation=True,suppress_st_warning=True)
+@st.experimental_memo
 def split(data):
     df = pd.DataFrame(data)
     df = data.sort_values(by=["Year"],ascending = True)
@@ -314,6 +315,7 @@ new_y_test = pd.Series(y_test,index=None)
 # Exécution des modèles
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True,suppress_st_warning=True)
+@st.experimental_memo
 def train_model():
     
      models = []
@@ -373,7 +375,8 @@ st.markdown("""
 # Fonction split et normalisation des données
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
-@st.cache(allow_output_mutation=True,suppress_st_warning=True)
+# @st.cache(allow_output_mutation=True,suppress_st_warning=True)
+@st.experimental_memo
 def split_normalisation(data,option):
     
   df = pd.DataFrame(data)

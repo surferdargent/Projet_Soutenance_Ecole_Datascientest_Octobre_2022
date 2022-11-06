@@ -233,7 +233,7 @@ def run():
 
 
     # Exécution des modèles
-    # @st.cache(suppress_st_warning=True,allow_output_mutation=True)
+    @st.cache(suppress_st_warning=True,allow_output_mutation=False)
     def train_model():
        
         models = []
