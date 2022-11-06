@@ -233,30 +233,30 @@ def run():
 
 
     # Exécution des modèles
-    @st.cache(suppress_st_warning=True,allow_output_mutation=True)
-    def train_model():
+    # @st.cache(suppress_st_warning=True,allow_output_mutation=True)
+    # def train_model():
        
-        models = []
-        models.append(('Logistic Regression',LogisticRegression(random_state=123)))
-        models.append(('KNeighbors', KNeighborsClassifier()))
-        models.append(('Random Forest', RandomForestClassifier(random_state=123)))
-        accuracies = []
-        names = []
+    #     models = []
+    #     models.append(('Logistic Regression',LogisticRegression(random_state=123)))
+    #     models.append(('KNeighbors', KNeighborsClassifier()))
+    #     models.append(('Random Forest', RandomForestClassifier(random_state=123)))
+    #     accuracies = []
+    #     names = []
         
-        for name, model in models:
-            model.fit(X_train,y_train)
-            accuracy = model.score(X_test,y_test)
-            accuracies.append(accuracy)
-            names.append(name)
-            msg = "Résultat pour %s: %f" % (name, accuracy)
-            st.write(msg)
-        fig = plt.figure()
-        plt.bar(names, accuracies)
-        plt.show()
-        return fig
+    #     for name, model in models:
+    #         model.fit(X_train,y_train)
+    #         accuracy = model.score(X_test,y_test)
+    #         accuracies.append(accuracy)
+    #         names.append(name)
+    #         msg = "Résultat pour %s: %f" % (name, accuracy)
+    #         st.write(msg)
+    #     fig = plt.figure()
+    #     plt.bar(names, accuracies)
+    #     plt.show()
+    #     return fig
             
 
-    st.pyplot(train_model())
+    # st.pyplot(train_model())
     
     st.markdown(
    """
