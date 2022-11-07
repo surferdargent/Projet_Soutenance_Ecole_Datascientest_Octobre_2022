@@ -37,7 +37,7 @@ sns.set_theme()
 # rf_load_sav,grid_rf_load_sav = load_models()
 
 
-
+@st.cache(suppress_st_warning=True,allow_output_mutation=True)
 def load_data():
     data = pd.read_csv('atp_data.csv',parse_dates=['Date'])
     data["Date"] = pd.to_datetime(data["Date"])
@@ -45,7 +45,7 @@ def load_data():
     return data
 data = load_data()
 
-
+@st.cache(suppress_st_warning=True,allow_output_mutation=True)
 def predict(df):
     data = pd.DataFrame()
     data = df
@@ -262,9 +262,9 @@ from sklearn.ensemble import RandomForestClassifier
 
 # Trier les dates du dataset 
 new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
-# @st.cache(suppress_st_warning=True)
-# @st.cache(allow_output_mutation=True,suppress_st_warning=True)
-@st.experimental_memo
+
+@st.cache(allow_output_mutation=True,suppress_st_warning=False)
+
 def split(data):
     df = pd.DataFrame(data)
     df = data.sort_values(by=["Year"],ascending = True)
@@ -313,8 +313,8 @@ new_y_test = pd.Series(y_test,index=None)
 
 # Définition du modèle
 # Exécution des modèles
-# @st.cache(suppress_st_warning=True)
-@st.cache(allow_output_mutation=True,suppress_st_warning=True)
+
+# @st.cache(allow_output_mutation=True,suppress_st_warning=True)
 def train_model():
     
      models = []
@@ -375,7 +375,7 @@ st.markdown("""
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
 # @st.cache(allow_output_mutation=True,suppress_st_warning=True)
-@st.experimental_memo
+# @st.experimental_memo
 def split_normalisation(data,option):
     
   df = pd.DataFrame(data)
@@ -426,7 +426,7 @@ def split_normalisation(data,option):
         df = pd.DataFrame(list(zip(names,accuracies)), columns=['Noms', f"Scores {x}"])
       
   return df
-# @st.cache(allow_output_mutation=True,suppress_st_warning=True) 
+# @st.cache(allow_output_mutation=True,suppress_st_warning=False) 
 def importance_variables():
     RandomForestClassifier(random_state=123).fit(X_train,y_train)
     fig1 = plt.figure(figsize=(14,6))
@@ -503,7 +503,7 @@ df3 = df3["Scores 3"]
 df4 = df4["Scores 4"]
 df5 = df5["Scores 5"]
 df6=df6["Noms"]
-@st.cache(allow_output_mutation=True)
+# @st.cache(allow_output_mutation=True)
 def creat_df():
     
     data1 =  pd.concat([df6,df1],axis=1)

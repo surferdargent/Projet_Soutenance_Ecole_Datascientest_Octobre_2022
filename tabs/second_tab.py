@@ -39,7 +39,7 @@ def run():
     )
    
    
-    @st.cache
+    @st.cache(suppress_st_warning=True,allow_output_mutation=True)
     def load_data():
         data = pd.read_csv('atp_data.csv',parse_dates=['Date'])
         data["Date"] = pd.to_datetime(data["Date"])
