@@ -194,7 +194,7 @@ def run():
         prédiction. Cette stratégie, que l’on peut qualifier de prudente, vise à minimiser les risques
         et diminuer le montant des sommes engagées.
        """)
-         
+       
     data_var_mask['Prob de perdre'] = probs[:,0] 
     data_var_mask['Prob de gagner'] = probs[:,1]
     fourth_column = data_var_mask.pop("Prob de perdre")
@@ -202,9 +202,19 @@ def run():
     
     five_column = data_var_mask.pop("Prob de gagner")
     data_var_mask.insert(4, "Prob de gagner", five_column)
+    
+    # def paris2(seuil,data_var_mask):
+        
+    #     seuil_pari = seuil
+    #     data_var_mask_seuil = data_var_mask[data_var_mask["Prob de gagner"] >= seuil_pari]
    
-    st.write(data_var_mask)
-     
+        
+    #     return data_var_mask_seuil
+    # data_var_mask_seuil = paris2(0.8,data_var_mask)
+    # st.write("La somme pariée serait de", round(data_var_mask_seuil["Mise"].sum(),2), "euros et le gain prédit de", round(data_var_mask_seuil["Gains"].sum(),2),"euros."),st.write("Soit",round( (data_var_mask_seuil["Gains"].sum()-data_var_mask_seuil["Mise"].sum())/data_var_mask_seuil["Mise"].sum(),2)*100,"% de bénéfices")
+    
+  
+        
     st.markdown(
         """
      
@@ -212,50 +222,12 @@ def run():
          
          
          La dernière stratégie serait la plus optimale car le bénéfice est de 38,0 % légèrement supérieur au bénéfice des préconisations bookmakers ( 36,0 %) 
-         Surtout la somme engagée pour la dernière stratégie est de 20600 euros contre 40970 euros si on suit les préconisations bookmakers.Notre stratégie battrait les bookmakers ...""")    
+         Surtout la somme engagée pour la dernière stratégie est de 20600 euros contre 41120 euros si on suit les préconisations bookmakers.Notre stratégie battrait les bookmakers ...""")    
          
-       # prediction_of_probability = clf.predict_proba(X_test)  
-
-      
-    
-    # """
+     
     # Pour le test nous allons prendre les 10 derniers joueurs de notre jeu de test et appliquer notre  stratégie 
             
-    # """   
-    
   
-    # @st.cache()   
-    # def demo(taux,mse_depart ):
-    #     #list_proba = []
-        
-    #     # gain = 0
-    #     # mise_totale = 0,
-    #     # mise_de_depart = mse_depart
-    #     # seuil = taux
-    #     # # y_pred_proba = probs
-    #     # for i,probas in enumerate (y_pred_proba):
-    #     #     cotes = data_var['B365'].iloc[i]
-    #     #     if probas[1] >= seuil :
-                
-    #     #         if y_test.iloc[i]== 1:
-    #     #             gain += round((mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil )) * (cotes - 1))
-    #     #         mise_totale += round(mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil ))
-    # #     #st.write("La somme pariée serait de", mise_totale, "euros et le gain prédit de", gain,"euros.")
-    # #     #st.write("Soit",round( gain/mise_totale,2)*100,"% de bénéfices")
-    # #     ###return proba[1],
-    
-    
-    #  _left, _right = st.columns(2)
-    
-    #  with _left:
-    #     taux  = st.number_input('Sélectionner un taux entre 51 et 100 %',51,100,51,key=5)
-    #     mse_depart = st.number_input('Sélectionner votre mise de départ',1,20000,10,key=3)
-    
-    #  with _left:
-    #     if st.button('Lancer la démo'):
-    #         demo(taux,mse_depart)
-    #         st.markdown("""
-    #                   """)       
 
     
 st.markdown("---")
@@ -281,11 +253,6 @@ st.markdown(
     )
    
 
-# Stratégie
 
-#  #title = "Stratégie"
-#  sidebar_name = "Stratégie et Conclusion"
-
-#  st.title("Stratégie et Conclusion")
 
  

@@ -372,10 +372,6 @@ st.markdown("""
  
   
 # Fonction split et normalisation des données
-# @st.cache(suppress_st_warning=True)
-# @st.cache(allow_output_mutation=True)
-# @st.cache(allow_output_mutation=True,suppress_st_warning=True)
-# @st.experimental_memo
 def split_normalisation(data,option):
     
   df = pd.DataFrame(data)
@@ -686,24 +682,15 @@ def paris1(mise_de_dep):
     
     third_column = data_var_mask.pop("Gains")
     data_var_mask.insert(2, "Gains", third_column)
-    mise2 = data_var_mask["Mise"].sum()
-    gain2 = data_var_mask["Gains"].sum()
-    st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
+    # mise2 = data_var_mask["Mise"].sum()
+    # gain2 = data_var_mask["Gains"].sum()
+    # st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
     
     st.dataframe(data_var_mask)      
     return 
 
 probs = grid_rf.predict_proba(X_test)
-# df_test = pd.DataFrame(X_test)
-# df_test['Target'] = y_test
 
-
-
-# df_test = pd.DataFrame(X_test)
-# df_test['Target'] = y_test
-# df_test['prob_0'] = probs[:,0] 
-# df_test['prob_1'] = probs[:,1]
-# st.write(df_test)
 
 def paris2(gain = 0,mise_totale = 0 , mise_de_depart =  mise_de_depart , seuil = 0.8 ):
     y_pred_proba = probs
@@ -721,8 +708,4 @@ st.markdown("""La somme pariée serait de 20600 euros et le gain prédit de 7843
 st.markdown("""La dernière stratégie serait la plus optimale car le bénéfice est de 38,0 % légèrement supérieur au bénéfice des préconisations bookmakers ( 36,0 %)  Surtout la somme engagée pour la dernière stratégie est de 20600 euros contre 40970 euros si on suit les préconisations bookmakersNotre stratégie battrait les bookmakers ...""")
 
 
- 
-# pred_prob = model.predict(X_test) # calculate prediction probabilities
-# pred_class  = np.where(pred_prob >0.5, "Yes", "No") #for binary(Yes/No) category
-# predictions = pd.DataFrame(pred_class, columns=['Prediction'])
-# my_new_df = pd.concat([my_old_df, predictions], axis =1)
+

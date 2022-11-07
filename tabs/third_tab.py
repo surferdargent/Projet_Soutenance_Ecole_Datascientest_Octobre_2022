@@ -6,7 +6,7 @@ import seaborn as sns
 
 import io
 
-# import pickle
+
 
 from traitement import importance_variables
 from sklearn.metrics import classification_report
@@ -223,14 +223,7 @@ def run():
     X_train,y_train,X_test,y_test = split(new_df_preprocessing) 
 
     
-    
-    
-    
     # Définition du modèle
-
-
-    
-
 
     # Exécution des modèles
     # @st.cache(suppress_st_warning=True,allow_output_mutation=True)
@@ -474,8 +467,6 @@ def run():
     
     #rf_loaded = pickle.load(open('.\models\Random Forest.sav', 'rb'))
     # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))   
-
-
 
 
     @st.cache(suppress_st_warning=True,allow_output_mutation=True)
