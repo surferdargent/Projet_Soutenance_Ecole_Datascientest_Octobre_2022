@@ -280,8 +280,7 @@ def split(data):
     
     y_train = data_train['Win']
     y_test =  data_test['Win']
-    
-    
+  
     X_train = X_train.select_dtypes('float')
     X_test = X_test.select_dtypes('float')
     
@@ -308,6 +307,7 @@ st.markdown(
 st.markdown(""":tennis: 1er entraînement""")
 
 X_train,y_train,X_test,y_test = split(new_df_preprocessing) 
+# y_test_demo = y_test.reset_index()
 
 new_y_test = pd.Series(y_test,index=None)
 

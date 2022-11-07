@@ -128,7 +128,7 @@ def run():
     data_var['Year'] = pd.to_datetime(data_var['Year'])
     data_var['Year']= data_var['Year'].dt.date
    
-   
+    
     # data.reset_index(drop=True, inplace=True)
     data_var = data_var.sort_values(by=["Year"],ascending = True)
     data_var.reset_index(inplace=True, drop=False)
@@ -165,10 +165,12 @@ def run():
         third_column = data_var_mask.pop("Gains")
         data_var_mask.insert(2, "Gains", third_column)
        
-        #st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
+       
         
         st.dataframe(data_var_mask)      
-        return st.write("La somme pariée serait de", round(data_var_mask["Mise"].sum(),2), "euros et le gain prédit de", round(data_var_mask["Gains"].sum(),2),"euros."),st.write("Soit",round( (data_var_mask["Gains"].sum()-data_var_mask["Mise"].sum())/data_var_mask["Mise"].sum(),2)*100,"% de bénéfices")
+        return data_var_mask
+    st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
+    # st.write("La somme pariée serait de", round(data_var_mask["Mise"].sum(),2), "euros et le gain prédit de", round(data_var_mask["Gains"].sum(),2),"euros."),st.write("Soit",round( (data_var_mask["Gains"].sum()-data_var_mask["Mise"].sum())/data_var_mask["Mise"].sum(),2)*100,"% de bénéfices")
         
     paris1(mise_de_depart,data_var_mask)
     
@@ -203,14 +205,15 @@ def run():
     five_column = data_var_mask.pop("Prob de gagner")
     data_var_mask.insert(4, "Prob de gagner", five_column)
     
-    # def paris2(seuil,data_var_mask):
+    def paris2(seuil,data_var_mask):
         
-    #     seuil_pari = seuil
-    #     data_var_mask_seuil = data_var_mask[data_var_mask["Prob de gagner"] >= seuil_pari]
+        seuil_pari = seuil
+        data_var_mask_seuil = data_var_mask[data_var_mask["Prob de gagner"] >= seuil_pari]
    
-        
-    #     return data_var_mask_seuil
-    # data_var_mask_seuil = paris2(0.8,data_var_mask)
+        st.dataframe(data_var_mask_seuil)   
+        return data_var_mask_seuil
+    paris2(0.8,data_var_mask)
+    
     # st.write("La somme pariée serait de", round(data_var_mask_seuil["Mise"].sum(),2), "euros et le gain prédit de", round(data_var_mask_seuil["Gains"].sum(),2),"euros."),st.write("Soit",round( (data_var_mask_seuil["Gains"].sum()-data_var_mask_seuil["Mise"].sum())/data_var_mask_seuil["Mise"].sum(),2)*100,"% de bénéfices")
     
   
@@ -230,16 +233,16 @@ def run():
   
 
     
-st.markdown("---")
+    st.markdown("---")
     
-st. markdown(
+    st. markdown(
         
             """
             ## Conclusion
             
             """
         )
-st.markdown(
+    st.markdown(
     """
         Au terme de notre projet, nous avons pu entraîner un modèle de prévision des résultats des
         matchs, plus performant que les prédictions des bookmakers. La qualité de cette information nous a permis de développer une stratégie de paris maximisant nos gains,
