@@ -57,7 +57,7 @@ def predict(df):
 
     # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
     data['Victoire_reel'] = "V"
-    data['Predict_bkm'] = data[['Bkm_prediction']] 
+    data['Predict_bkm'] = data['Bkm_prediction'] 
     data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
 
     # Le pourcentage de bonnes prédictions
