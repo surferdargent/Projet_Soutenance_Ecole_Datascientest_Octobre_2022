@@ -45,7 +45,7 @@ def load_data():
     return data
 data = load_data()
 
-@st.cache(suppress_st_warning=True,allow_output_mutation=True)
+# @st.cache(suppress_st_warning=True,allow_output_mutation=True)
 def predict(df):
     data = pd.DataFrame()
     data = df
@@ -154,32 +154,32 @@ new_df_preprocessing['Year'] = new_df_preprocessing['Year'].dt.date
   # Affichage info df df
   # st.write(new_df_preprocessing)
  
-col1,col2= st.columns([3,1])
+# col1,col2= st.columns([3,1])
 
-with col1:
-    st.markdown("""*Nos variables sont elles bien typées ?*""")
-    buffer = io.StringIO()
-    new_df_preprocessing.info(buf=buffer)
+# with col1:
+#     st.markdown("""*Nos variables sont elles bien typées ?*""")
+#     buffer = io.StringIO()
+#     new_df_preprocessing.info(buf=buffer)
 
-    s = buffer.getvalue()
-    st.text(s)
-with col2:
-    st.markdown("""
+#     s = buffer.getvalue()
+#     st.text(s)
+# with col2:
+#     st.markdown("""
  
-            _*Action*_
-            """
-            )
-    st.markdown(""" Toutes les variables de type "object" devront être encodées ...""")
+#             _*Action*_
+#             """
+#             )
+#     st.markdown(""" Toutes les variables de type "object" devront être encodées ...""")
  
-st.markdown(
-  """
-  :tennis: Pour l'encodage nous avons choisi la méthodologie suivante :
-  - Pour les variables **Player**, **Tournament**, **Series** et **Round** nous remplaçons les noms par des numéros id.
-  - Pour la variable **Court** nous remplacons ‘Outdoor’, ‘Indoor’ par 0, 1 et pour la variable **Surface** nous changeons les modes 'Hard', 'Clay’, 'Grass', 'Carpet' par 0, 1, 2, 3.
-  - Pour les variables numériques mais qui sont au format texte nous les typons en float.
+# st.markdown(
+#   """
+#   :tennis: Pour l'encodage nous avons choisi la méthodologie suivante :
+#   - Pour les variables **Player**, **Tournament**, **Series** et **Round** nous remplaçons les noms par des numéros id.
+#   - Pour la variable **Court** nous remplacons ‘Outdoor’, ‘Indoor’ par 0, 1 et pour la variable **Surface** nous changeons les modes 'Hard', 'Clay’, 'Grass', 'Carpet' par 0, 1, 2, 3.
+#   - Pour les variables numériques mais qui sont au format texte nous les typons en float.
 
-  """
-  )
+#   """
+#   )
  
 # Encodage des variables 
 # Certaines variables sont catégorielles il faut les passer en numérique
@@ -231,36 +231,38 @@ new_df_preprocessing[['BestOf', 'Court', 'Surface', 'Rank', 'SetsWon', 'EloPoint
 'B365', 'RankDiff', 'Win', 'Id_player', 'Id_tournament', 'Id_series',
 'Id_round']].astype(float)
  
-st.markdown(
-  """
+                                   
+                                   
+# st.markdown(
+#   """
  
-  Comme le montre le dataframe ci-desous les variables sont bien toutes au format numérique nous pouvons définir nos features :chart_with_upwards_trend:, notre target :dart: et normaliser nos variables .
+#   Comme le montre le dataframe ci-desous les variables sont bien toutes au format numérique nous pouvons définir nos features :chart_with_upwards_trend:, notre target :dart: et normaliser nos variables .
 
-  """
-  )
-st.write(new_df_preprocessing.head())
+#   """
+#   )
+# st.write(new_df_preprocessing.head())
  
-st.markdown(
-  """
+# st.markdown(
+#   """
   
-  :tennis: La variable **"Win"** sera notre target.
+#   :tennis: La variable **"Win"** sera notre target.
  
  
-  """
-  )
+#   """
+#   )
  
-_left, mid, _right = st.columns(3)
-with _left:
-    st.image("assets/Diapositive3.png",width=650)
+# _left, mid, _right = st.columns(3)
+# with _left:
+#     st.image("assets/Diapositive3.png",width=650)
 
 from sklearn.preprocessing import StandardScaler
  
-# Modèle de classification que l'on va utiliser
+# # Modèle de classification que l'on va utiliser
 
 from sklearn.ensemble import RandomForestClassifier
 
 
-# Trier les dates du dataset 
+# # Trier les dates du dataset 
 new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
 
 @st.cache(allow_output_mutation=True,suppress_st_warning=False)
