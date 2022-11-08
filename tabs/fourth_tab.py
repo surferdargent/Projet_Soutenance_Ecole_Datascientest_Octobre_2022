@@ -169,11 +169,11 @@ def run():
         
         st.dataframe(data_var_mask)      
         return data_var_mask
-    st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous siuvons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
+    
     # st.write("La somme pariée serait de", round(data_var_mask["Mise"].sum(),2), "euros et le gain prédit de", round(data_var_mask["Gains"].sum(),2),"euros."),st.write("Soit",round( (data_var_mask["Gains"].sum()-data_var_mask["Mise"].sum())/data_var_mask["Mise"].sum(),2)*100,"% de bénéfices")
         
     paris1(mise_de_depart,data_var_mask)
-    
+    st.write ("La somme pariée serait de 116070 euros et le gain prédit de 49807 euros si nous suivons les recommandations des bookmakers sur notre jeu de test .Soit 43.0 % de bénéfices")
    
 
     # Option 3 : stratégie 
