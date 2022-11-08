@@ -113,13 +113,13 @@ def run():
         data = data.dropna()
 
         # Synthèse des prévisions des bookmakers dans un dataframe 
-        data['Bkm_prediction'] = data[['B365W','B365L']].apply(lambda x: np.argmin(x), axis=1)
+        data['Bkm_prediction'] = df[['B365W','B365L']].apply(lambda x: np.argmin(x), axis=1)
         data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1], value=['V', 'D'])
 
         # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
         data['Victoire_reel'] = "V"
-        data['Predict_bkm'] = data[['Bkm_prediction']] 
-        data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
+        # data['Predict_bkm'] = data['Bkm_prediction']
+        data["Bkm_predict_vict"] = data['Bkm_prediction'].replace({"D":0,"V":1}).astype(float)
 
         # Le pourcentage de bonnes prédictions
         data['Bkm_prediction'] = data['Victoire_reel']==data['Bkm_prediction']

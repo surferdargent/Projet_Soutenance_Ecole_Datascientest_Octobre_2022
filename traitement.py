@@ -57,8 +57,8 @@ def predict(df):
 
     # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
     data['Victoire_reel'] = "V"
-    data['Predict_bkm'] = data['Bkm_prediction'] 
-    data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
+    # data['Predict_bkm'] = data['Bkm_prediction'] 
+    data["Bkm_predict_vict"] = data['Bkm_prediction'] .replace({"D":0,"V":1}).astype(float)
 
     # Le pourcentage de bonnes prédictions
     data['Bkm_prediction'] = data['Victoire_reel']==data['Bkm_prediction']
@@ -266,7 +266,7 @@ new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = 
 @st.cache(allow_output_mutation=True,suppress_st_warning=False)
 
 def split(data):
-    df = pd.DataFrame(data)
+    df = pd.DataFrame()
     df = data.sort_values(by=["Year"],ascending = True)
     
     # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
@@ -374,7 +374,7 @@ st.markdown("""
 # Fonction split et normalisation des données
 def split_normalisation(data,option):
     
-  df = pd.DataFrame(data)
+  df = pd.DataFrame()
   df = data.sort_values(by=["Year"],ascending = True)
   x = option
    
