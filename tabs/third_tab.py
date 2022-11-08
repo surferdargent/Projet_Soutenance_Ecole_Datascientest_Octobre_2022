@@ -271,12 +271,44 @@ def run():
     """)
     
     st.markdown(""":tennis: 2ème entraînement """)
-    
-    
+    @st.cache(suppress_st_warning=True,allow_output_mutation=True)
+    def split1(data):
+        df = pd.DataFrame(data)
+        df = data.sort_values(by=["Year"],ascending = True)
+        
+        # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
+        date_split = pd.Timestamp(2016, 1, 1)
+        data_train = df[df['Year'] < date_split]
+        data_test =  df[df['Year'] >= date_split]
+        
+        # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
+        X_train = data_train.drop(['Win'], axis=1)
+        X_test =  data_test.drop(['Win'], axis=1)
+        
+        y_train = data_train['Win']
+        y_test =  data_test['Win']
+       
+       
+        X_train = X_train.select_dtypes('float')
+        X_test = X_test.select_dtypes('float')
+        
+        
+        # On normalise nos données numériques :
+        scaler = StandardScaler()
+        X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns = X_train.columns)
+        X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
+        
+        
+        X_train = X_train_scaled
+        X_test = X_test_scaled
+
+    #y_test = y_test.reset_index(drop=True)
+        return X_train,y_train,X_test,y_test
     new_df_preprocessing_demo = new_df_preprocessing.drop("SetsWon",axis=1)
-    X_train,y_train,X_test,y_test = split(new_df_preprocessing_demo)  
+    X_train,y_train,X_test,y_test = split1(new_df_preprocessing_demo)  
     
     st.pyplot(train_model())
+    
     st.markdown("""
     Ces résultats semblent plus conformes à ce que l’on peut attendre pour ce type de données.  
     Le meilleur modèle est RF avec un score de 0.88, ce qui est meilleur que les prédictions des bookmakers. 
