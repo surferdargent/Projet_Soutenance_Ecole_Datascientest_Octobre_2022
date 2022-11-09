@@ -3,12 +3,6 @@ import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
 
-
-
-
-
-
-
 title = "Datavisualisation"
 sidebar_name = "Datavisualisation"
 
@@ -73,7 +67,7 @@ def run():
     
     st.markdown(
         """
-        :point_right: [La Data Visualisation](https://app.powerbi.com/links/riU_8qHnWI?ctid=e8df5f43-80c9-47f6-a040-4562dce73ccd&pbi_source=linkShare)
+        :point_right: [La Data Visualisation](https://app.powerbi.com/links/riU_8qHnWI?ctid=e8df5f43-80c9-47f6-a040-4562dce73ccd&pbi_source=linkShare) avec Power Bi
             
         """
     )
@@ -131,7 +125,7 @@ def run():
         explode = [ 0, 0.2], 
         pctdistance=0.5,
         shadow = True)
-        plt.title('Pourcentage de bonnes prédictions des bookmakers');
+        plt.title('Pourcentage de bonnes prédictions des bookmakers')
         st.pyplot(fig)
      
 
@@ -180,16 +174,16 @@ def run():
     @st.cache(suppress_st_warning=True,allow_output_mutation=True)
     def mean_rolling(new_df,x,y):
       # Moyenne roulante des victoires par joueur sur x et y mois en fonction des victoires totales, de la surface, du tournois et des tours 
-      new_df['Year'] = pd.to_datetime(new_df['Year'])
-      var_mois = [ x , y ]
+        new_df['Year'] = pd.to_datetime(new_df['Year'])
+        var_mois = [ x , y ]
     
-      for i in var_mois :
-        new_df = new_df.sort_values(by=["Player","Year"],ascending = True)
-        new_df[f"Ratio_victoire_{i}_mois"] = ((new_df.groupby("Player").rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
-        new_df[f"Ratio_surface_{i}_mois"] = ((new_df.groupby(["Player","Surface"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
-        new_df[f"Ratio_tournois_{i}_mois"] = ((new_df.groupby(["Player","Tournament"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
-        new_df[f"Ratio_tours_{i}_mois"] = ((new_df.groupby(["Player","Round"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
-      return new_df
+        for i in var_mois :
+            new_df = new_df.sort_values(by=["Player","Year"],ascending = True)
+            new_df[f"Ratio_victoire_{i}_mois"] = ((new_df.groupby("Player").rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
+            new_df[f"Ratio_surface_{i}_mois"] = ((new_df.groupby(["Player","Surface"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
+            new_df[f"Ratio_tournois_{i}_mois"] = ((new_df.groupby(["Player","Tournament"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
+            new_df[f"Ratio_tours_{i}_mois"] = ((new_df.groupby(["Player","Round"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
+        return new_df
   
     # 6 et 18 seront les mois choisis pour la fonction
     new_df = mean_rolling(new_df,6,18)
