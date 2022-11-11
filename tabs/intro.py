@@ -1,5 +1,6 @@
 """
-Created on Sun Oct 16 16:16:13 2022
+
+Created on Sun Oct 16 16:16:13 2022.
 
 @author: olecu
 """
@@ -11,6 +12,7 @@ sidebar_name = "Introduction"
 
 
 def run():
+    """Voir prédiction des bookmakers."""
     st.image("https://cdn.dribbble.com/users/891352/screenshots/3473217/media/db7d2f04eab893dda0a2afec79e2311f.gif",
              width=450)
     # st.image("https://dst-studio-template.s3.eu-west-3.amazonaws.com/3.gif")
