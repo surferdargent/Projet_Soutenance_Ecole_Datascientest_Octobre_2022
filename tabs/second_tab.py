@@ -6,8 +6,8 @@ Created on Sun Oct 16 16:16:13 2022.
 
 # -*- coding: utf-8 -*-
 import streamlit as st
-import pandas as pd 
-import numpy as np 
+import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 title = "Datavisualisation"
