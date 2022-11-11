@@ -44,7 +44,8 @@ def predict(df):
 
 # Synthèse des prévisions des bookmakers dans un dataframe
 
-    data['Bkm_prediction'] = df[['B365W', 'B365L']].apply(lambda x: np.argmin(x) , axis=1)
+    Bkm_prediction = data[['B365W', 'B365L']].apply(lambda x: np.argmin(x), axis=1)
+    data['Bkm_prediction'] = Bkm_prediction
     data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1], value=['V', 'D'])
 
     # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
@@ -316,7 +317,7 @@ Nous allons maintenant tenter d’améliorer les performances du modèle.
 def split_normalisation(data, option):
     """Split et normalisation ."""
     df = pd.DataFrame()
-    df = data.sort_values(by=["Year"],ascending=True)
+    df = data.sort_values(by=["Year"], ascending=True)
     x = option
 
 
@@ -558,8 +559,11 @@ data.rename(columns={'Date': 'Year'}, inplace=True)
 
 # Synthèse des prévisions des bookmakers dans un dataframe
 
-data['Bkm_prediction'] = data[['B365W', 'B365L']].apply(lambda x: np.argmin(x), axis=1)
-data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1], value=['V', 'D'])
+Bkm_prediction = data[['B365W', 'B365L']].apply(lambda x: np.argmin(x), axis=1)
+
+data['Bkm_prediction'] = Bkm_prediction
+data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1],
+                                                        value=['V', 'D'])
 
 
 # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
