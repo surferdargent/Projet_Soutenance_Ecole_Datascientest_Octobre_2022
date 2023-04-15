@@ -8,7 +8,7 @@ Created on Sun Oct 16 16:16:13 2022
 # -*- coding: utf-8 -*-
 
 
-
+import datetime
 import streamlit as st
 import pandas as pd 
 import numpy as np 
@@ -266,32 +266,33 @@ new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = 
 
 def split(data):
     df = pd.DataFrame(data)
-    df = df.sort_values(by=["Year"],ascending = True)
-    
+    df = df.sort_values(by=["Year"], ascending=True)
+
     # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
-    date_split = pd.Timestamp(2016, 1, 1)
-    data_train = df[df['Year'] < date_split]
-    data_test =  df[df['Year'] >= date_split]
-    
+    date_split = pd.Timestamp(datetime.datetime(2016, 1, 1))
+    data_train = df[df['Year'] < date_split.date()]
+    data_test =  df[df['Year'] >= date_split.date()]
+
+
     # Création des quatre variables pour l'entrainement et le test (X_train, X_test, y_train, y_test)
     X_train = data_train.drop(['Win'], axis=1)
-    X_test =  data_test.drop(['Win'], axis=1)
-    
+    X_test = data_test.drop(['Win'], axis=1)
+
     y_train = data_train['Win']
-    y_test =  data_test['Win']
-    
+    y_test = data_test['Win']
+
     # On ne garde que les variables numériques
     X_train = X_train.select_dtypes('float')
     X_test = X_test.select_dtypes('float')
-    
+
     # Normalisation des données numériques
     scaler = StandardScaler()
     X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
     X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
-    
+
     X_train = X_train_scaled
     X_test = X_test_scaled
-    
+
     return X_train, y_train, X_test, y_test
 
 
@@ -302,12 +303,13 @@ st.markdown(
   ## Modélisation
 """
 )
- 
+
 st.markdown(""":tennis: 1er entraînement""")
 
-X_train,y_train,X_test,y_test = split(new_df_preprocessing) 
+X_train, y_train, X_test, y_test = split(new_df_preprocessing)
 
-new_y_test = pd.Series(y_test,index=None)
+new_y_test = pd.Series(y_test, index=None)
+
 
 
 # Définition du modèle
@@ -382,9 +384,10 @@ def split_normalisation(data,option):
   
 
 # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
-  date_split = pd.Timestamp(2016, 1, 1)
-  data_train = df[df['Year'] < date_split]
-  data_test =  df[df['Year'] >= date_split]
+  date_split = pd.Timestamp(datetime.datetime(2016, 1, 1))
+  data_train = df[df['Year'] < date_split.date()]
+  data_test =  df[df['Year'] >= date_split.date()]
+
 
 # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
   X_train = data_train.drop(['Win'], axis=1)
