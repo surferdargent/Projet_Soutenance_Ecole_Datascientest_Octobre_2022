@@ -26,7 +26,11 @@ from sklearn.neighbors import KNeighborsClassifier
 sns.set_theme()  
 
 
+import wget
 
+wget.download("https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV")
+#https://drive.google.com/file/d/0Bz7KyqmuGsilT0J5dmRCM0ROVHc/view?usp=sharing
+# wget "https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV"
 
 
 
@@ -419,7 +423,7 @@ def train_model():
         msg = "Résultat pour %s: %f" % (name, accuracy)
         st.write(msg)
     fig = plt.figure()
-    sns.barplot(names, accuracies)
+    plt.bar(names, accuracies)
     plt.show()
     st.pyplot(fig)      
 train_model()
@@ -512,7 +516,7 @@ def split_normalisation(data,option):
 def importance_variables():
     fig1 = plt.figure(figsize=(14,6))
     train_features = X_train
-    rf_loaded = pickle.load(open('.\models\Random Forest.sav', 'rb'))
+    rf_loaded = pickle.load(open('Random Forest.sav', 'rb'))
     vars_imp = pd.Series(rf_loaded.feature_importances_,index=train_features.columns).sort_values(ascending=False)
     sns.barplot(x=vars_imp.index,y=vars_imp)
     plt.xticks(rotation=90)
@@ -632,7 +636,7 @@ st.markdown("""
 # @st.cache(allow_output_mutation=True)
 
 def optimisation_models():
-    grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
+    grid_rf = pickle.load(open('\Grid_Random Forest.sav', 'rb'))
     # Optimisation du modèle
     # rf = RandomForestClassifier(random_state=123) 
     # param_grid_rf = [{ 'n_estimators' : [1000] ,
@@ -737,30 +741,7 @@ if start_date < end_date:
 # # data = data.loc[mask]
 
 st.dataframe(data)
-
-
-
-  
-data["Mise"] =  data['Bkm_predict_vict'] * mise_de_depart
-data["Gain"] =  data["Mise"] * (data["B365W"] -1 )
-
-st.write("La somme pariée serait de", round(data["Mise"].sum(axis=0),2), "euros et le gain prédit de", round(data["Gain"].sum(axis=0),2),"euros.")
-st.write("Soit",round( round(data["Gain"].sum(axis=0),2)/round(data["Mise"].sum(axis=0)),2)*100,"% de bénéfices.Ce gain représente la somme gagnée si nous suivons les préco du bookmaker B365.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Base pour récupérer les cotes
 
 data_var = pd.read_csv('df_variables_enrichies.csv',parse_dates=['Year'])
 date_split = pd.Timestamp(2016, 1, 1)
@@ -770,65 +751,35 @@ data_var['Year']= data_var['Year'].dt.date
 data.reset_index(drop=True, inplace=True)
 data_var = data_var.sort_values(by=["Year"],ascending = True)
 start_date_var, end_date_var = start_date, end_date
- 
+
 if start_date_var < end_date_var:
     pass
+
 else:
-     st.error('Error: Date de fin doit être choisi après la date de début.')
+    st.error('Error: Date de fin doit être choisi après la date de début.')
 
-#greater than the start date and smaller than the end date
-mask_var = (data_var['Year'] > start_date_var) & (data_var['Year'] <= end_date_var)
+
+mask_var = (data_var['Year'] >= start_date_var) & (data_var['Year'] <= end_date_var)
 data_var_mask = data_var.loc[mask_var]
-
-
-
-
-
-
-
-
-
-
-
-
-
-def paris1( mise = mise_de_depart):
-        
-    gain = data_var_mask.merge(y_test, how='inner', left_index=True, right_index=True)
-    gain = gain[gain["Win"]==1].sum* mise_de_depart * (gain['B365']-1)
-    mise_totale = gain[gain["Win"]==1].sum*mise_de_depart  
-        
-    return  mise_totale, gain,            
-
-
-
-# Option 2 : stratégie avec pari uniquement sur la prédiction du modèle pour les gagnants 
-
-
-
- 
-
-
-
 
 
 grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
 probs = grid_rf.predict_proba(X_test)
 
 def paris2(gain = 0,mise_totale = 0 , mise_de_depart =  mise_de_depart , seuil = 0.8 ):
-    y_pred_proba = probs
-    for i,probas in enumerate (y_pred_proba):
-        cotes = data_var['B365'].iloc[i]
-        if probas[1] >= seuil :
-            if y_test.iloc[i]== 1:
-                gain += round((mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil )) * (cotes - 1))
-            mise_totale += round(mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil ))
-    st.write("La somme pariée serait de", mise_totale, "euros et le gain prédit de", gain,"euros.")
-    st.write("Soit",round( gain/mise_totale,2)*100,"% de bénéfices")
-
-
-
-paris2()
+   y_pred_proba = probs
+   for i,probas in enumerate (y_pred_proba):
+      cotes = data_var['B365'].iloc[i]
+      if probas[1] >= seuil :
+           if y_test.iloc[i]== 1:
+               gain += round((mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil )) * (cotes - 1))
+           mise_totale += round(mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil ))
+   st.write("La somme pariée serait de", mise_totale, "euros et le gain prédit de", gain,"euros.")
+   st.write("Soit",round( gain/mise_totale,2)*100,"% de bénéfices")
+   paris2()
+ 
+st.markdown("""La somme pariée serait de 20600 euros et le gain prédit de 7843 euros.Soit 38.0 % de bénéfices""")
+st.markdown("""La dernière stratégie serait la plus optimale car le bénéfice est de 38,0 % légèrement supérieur au bénéfice des préconisations bookmakers ( 36,0 %)  Surtout la somme engagée pour la dernière stratégie est de 20600 euros contre 40970 euros si on suit les préconisations bookmakersNotre stratégie battrait les bookmakers ...""")
 
 
  
