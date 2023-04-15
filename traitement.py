@@ -422,10 +422,11 @@ def train_model():
         msg = "Résultat pour %s: %f" % (name, accuracy)
         st.write(msg)
     fig = plt.figure()
-    sns.barplot(names, accuracies)
+    sns.barplot(x=names, y=accuracies)
     plt.show()
     st.pyplot(fig)      
 train_model()
+
  
 st.markdown(
 """
