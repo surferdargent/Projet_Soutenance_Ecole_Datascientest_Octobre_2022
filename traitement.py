@@ -273,29 +273,27 @@ def split(data):
     data_train = df[df['Year'] < date_split]
     data_test =  df[df['Year'] >= date_split]
     
-    # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
+    # Création des quatre variables pour l'entrainement et le test (X_train, X_test, y_train, y_test)
     X_train = data_train.drop(['Win'], axis=1)
     X_test =  data_test.drop(['Win'], axis=1)
     
     y_train = data_train['Win']
     y_test =  data_test['Win']
     
-    
+    # On ne garde que les variables numériques
     X_train = X_train.select_dtypes('float')
     X_test = X_test.select_dtypes('float')
     
-    
-    # On normalise nos données numériques :
+    # Normalisation des données numériques
     scaler = StandardScaler()
-    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns = X_train.columns)
-    X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
-    
+    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
+    X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
     
     X_train = X_train_scaled
     X_test = X_test_scaled
     
-    #y_test = y_test.reset_index(drop=True)
-    return X_train,y_train,X_test,y_test
+    return X_train, y_train, X_test, y_test
+
 
 st.markdown("""Nous pouvons passer à la modélisation.""")
 st.markdown("---")
