@@ -350,8 +350,9 @@ def split(data):
     
     # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
     date_split = pd.Timestamp(2016, 1, 1)
-    data_train = df[df['Year'] < date_split]
-    data_test =  df[df['Year'] >= date_split]
+    data_train = df[df['Year'] < pd.Timestamp(date_split)]
+    data_test = df[df['Year'] >= pd.Timestamp(date_split)]
+
     
     # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
     X_train = data_train.drop(['Win'], axis=1)
@@ -419,7 +420,7 @@ def train_model():
         msg = "Résultat pour %s: %f" % (name, accuracy)
         st.write(msg)
     fig = plt.figure()
-    sns.barplot(names, accuracies)
+    sns.barplot(x=names, y=accuracies)
     plt.show()
     st.pyplot(fig)      
 train_model()
