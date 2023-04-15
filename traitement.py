@@ -7,194 +7,119 @@ Created on Sun Oct 16 16:16:13 2022
 
 # -*- coding: utf-8 -*-
 
+
+
 import streamlit as st
 import pandas as pd 
 import numpy as np 
 import matplotlib.pyplot as plt 
 import seaborn as sns
 import io   
-import config 
-import pickle
-
+# import pickle
+# import wget
 from sklearn.metrics import classification_report
+from sklearn.model_selection import GridSearchCV 
 from sklearn.linear_model import LogisticRegression 
 from PIL import Image
 from datetime import datetime 
 from sklearn.neighbors import KNeighborsClassifier
-
-
 sns.set_theme()  
 
 
-import wget
+# download data set
+# https://drive.google.com/file/d/1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV/view?usp=share_link
 
-wget.download("https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV")
-#https://drive.google.com/file/d/0Bz7KyqmuGsilT0J5dmRCM0ROVHc/view?usp=sharing
-# wget "https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV"
+# def load_models():
+#     rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV")
+#     grid_rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb&confirm=t")
+# #gdown "https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb"
+#     return rf_load_sav,grid_rf_load_sav
+
+# rf_load_sav,grid_rf_load_sav = load_models()
 
 
 
 def load_data():
-    data = pd.read_csv('atp_data.csv',parse_dates=['Date'])
+    data = pd.read_csv('atp_datat.csv',parse_dates=['Date'])
     data["Date"] = pd.to_datetime(data["Date"])
     data['Date'] = data['Date'].dt.date
     return data
 data = load_data()
 
-st.dataframe(data.head())
 
-st.markdown(
- """
- :tennis: La valeur elo :
+def predict(df):
+    data = pd.DataFrame()
+    data = df
+    data = data.dropna()
 
- """
- )
+    # Synthèse des prévisions des bookmakers dans un dataframe 
+    data['Bkm_prediction'] = data[['B365W','B365L']].apply(lambda x: np.argmin(x), axis=1)
+    data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1], value=['V', 'D'])
+
+    # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
+    data['Victoire_reel'] = "V"
+    data['Predict_bkm'] = data[['Bkm_prediction']] 
+    data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
+
+    # Le pourcentage de bonnes prédictions
+    data['Bkm_prediction'] = data['Victoire_reel']==data['Bkm_prediction']
+    label = data['Bkm_prediction'].value_counts().index
+    fig = plt.figure(figsize=(2,2))
+    plt.pie(x=data['Bkm_prediction'].value_counts().values, 
+    autopct="%.1f%%", 
+    labels=label,
+    explode = [ 0, 0.2], 
+    pctdistance=0.5,
+    shadow = True)
+    plt.title('Pourcentage de bonnes prédictions des bookmakers');
+    st.pyplot(fig)
  
-st.markdown(
- """
- Il s’agit d’une donnée ajoutée par le créateur du dataset permettant de mesurer l’état de  forme d’un joueur à un moment donné. Le principe est fondé sur le coefficient elo établi  pour les joueurs d’échecs. Ici, chaque joueur débute avec une valeur elo de 1500 points lors de son  premier match, et gagne ou perd des points après chaque victoire ou défaite. La valeur elo  fluctuant dans le temps en fonction de l’accumulation de victoires et de défaites, elle est une  indication de l’état de forme d’un joueur à une date donnée.  
 
- """
- )
-st.markdown(
-  """
-  :tennis: Nous remarquons qu'il y a des données manquantes dans le jeu de données  mais elles se trouvent dans  les colonnes relatives aux cotes des bookmakers, ces cotes étant indisponibles pour les tournois les plus anciens...
+    # Diviser le dataframe en deux en ayant un joueur par ligne en créant une colonne Win en mettant 0 si le joueur est perdant et 1 si il est gagnant 
+    data['RankDiff'] = data.LRank - data.WRank
 
-  """
-  )
-#st.image(Image.open("assets/sample-image.jpg"))
- 
-st.markdown(
-"""
-:point_right: [La Data Visualisation](https://app.powerbi.com/links/riU_8qHnWI?ctid=e8df5f43-80c9-47f6-a040-4562dce73ccd&pbi_source=linkShare)
+    winners = pd.DataFrame(data = [data.Winner, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.WRank, data.Wsets, data.elo_winner,data.B365W, data.RankDiff,data["Bkm_predict_vict"]]).T
+    winners.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface','Round', 'Rank', 'SetsWon', 'EloPoints', 'B365','RankDiff','Predict_W_Bkm']
+    winners['Win'] = 1
+    losers = pd.DataFrame(data = [data.Loser, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.LRank, data.Lsets, data.elo_loser,data.B365L, data.RankDiff, data["Bkm_predict_vict"]]).T
+    losers.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface', 
+    'Round', 'Rank', 'SetsWon', 'EloPoints','B365', 'RankDiff','Predict_W_Bkm']
+    losers['Win'] = 0
+    new_df = pd.concat([winners, losers], axis = 0)
+    return new_df
 
-"""
-)
-st.markdown(
-"""
-## Mais dans tout cela les bookmakers :moneybag: :moneybag: leurs prédictions sont-elles justes ?
-
-"""
-)
-st.markdown(
-"""
-Nous avons deux bookmakers dans le dataframe PS et B365 mais après comparaison des moyennes et médianes de leurs cotes nous avons constaté que leurs prédictions étaient quasi équivalentes. Donc pour simplifier notre analyse nous avons gardé un seul bookmaker le B365 car il a  le plus grand nombre de cotes.
-
-
-"""
-)
-st.markdown(
-"""
-
-Mais d'ailleurs la **cote** c'est quoi ? Elle a deux rôles, elle permet de :
-- Connaitre la prédiction du bookmaker entre deux joueurs car la cote la plus petite représentera le favori du bookmaker
-- Connaitre aussi son gain ( exemple cote 1.50 sur le joueur A en cas de victoire de celui-ci le gain sera de 1.50 * mise de départ )
-
-"""
-)
-st.markdown(
-"""
-Intéressons nous aux prédictions de notre bookmaker (B365) avec une représentation graphique de ses prédictions(après suppressions des données manquantes).
-
-"""
-)
-
-
-# Suppression des manquants
-data = data.dropna()
-
-# Synthèse des prévisions des bookmakers dans un dataframe 
-
-data['Bkm_prediction'] = data[['B365W','B365L']].apply(lambda x: np.argmin(x), axis=1)
-data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1], value=['V', 'D'])
-
-
-# Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
-data['Victoire_reel'] = "V"
-#data[['Bkm_prediction','Victoire_reel','Winner']]
-data['Predict_bkm'] = data[['Bkm_prediction']] 
-data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
-
-
-# Le pourcentage de bonnes prédictions
-data['Bkm_prediction'] = data['Victoire_reel']==data['Bkm_prediction']
-
-label = data['Bkm_prediction'].value_counts().index
-
-fig = plt.figure(figsize=(2,2))
-plt.pie(x=data['Bkm_prediction'].value_counts().values, 
-     autopct="%.1f%%", 
-     labels=label,
-     explode = [ 0, 0.2], 
-     pctdistance=0.5,
-     shadow = True)
-plt.title('Pourcentage de bonnes prédictions des bookmakers');
-st.pyplot(fig)
- 
-st.markdown(
- """
- Le pourcentage est de 71.4 % donc **l'objectif du projet est d'être au delà de 72 % de bonnes prévisions...**
- 
- """
- )
-st.markdown(
- """
- Avant d'attaquer la partie préprocessing nous avons enrichi notre jeu de données avec des moyennes roulantes c'est à dire calculer le ratio de victoire sur les 6 derniers mois et les 18 derniers mois en filtrant sur le nombre total de victoires mais en fonction de la surface , du tournoi et du tour.
- Nous avons donc deux indicateurs solides pour entrainer notre modèle ( elo et les moyennes roulantes )
- 
- """
- )
-st.markdown(
- """
- ## Statistiques Joueurs :
-
- """
-   )
- 
- 
- # Diviser ke dataframe en deux en ayant un joueur par ligne en créant une colonne Win en mettant 0 si le joueur est perdant et 1 si il est gagnant 
-data['RankDiff'] = data.LRank - data.WRank
-
-winners = pd.DataFrame(data = [data.Winner, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.WRank, data.Wsets, data.elo_winner,data.B365W, data.RankDiff,data["Bkm_predict_vict"]]).T
-
-winners.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface','Round', 'Rank', 'SetsWon', 'EloPoints', 'B365','RankDiff','Predict_W_Bkm']
-
-winners['Win'] = 1
-
-losers = pd.DataFrame(data = [data.Loser, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.LRank, data.Lsets, data.elo_loser,data.B365L, data.RankDiff, data["Bkm_predict_vict"]]).T
-
-losers.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface', 
-               'Round', 'Rank', 'SetsWon', 'EloPoints','B365', 'RankDiff','Predict_W_Bkm']
-
-losers['Win'] = 0
-
-
-new_df = pd.concat([winners, losers], axis = 0)
-
+new_df = predict(data)
 new_df['Year'] = pd.to_datetime(new_df['Year'])
 new_df_strategie = new_df.sort_values(by=["Year"],ascending = True)
 new_df = new_df_strategie.drop('Predict_W_Bkm',axis = 1)
+print(new_df)
 
- # Moyenne roulante stat joueurs
 
-def mean_rolling(new_df,x,y):
-  # Moyenne roulante des victoires par joueur sur x et y mois en fonction des victoires totales, de la surface, du tournois et des tours 
-  new_df['Year'] = pd.to_datetime(new_df['Year'])
-  var_mois = [ x , y ]
+# Moyenne roulante stat joueurs
+def mean_rolling(df,x,y):
 
-  for i in var_mois :
-    new_df = new_df.sort_values(by=["Player","Year"],ascending = True)
-    new_df[f"Ratio_victoire_{i}_mois"] = ((new_df.groupby("Player").rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
-    new_df[f"Ratio_surface_{i}_mois"] = ((new_df.groupby(["Player","Surface"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
-    new_df[f"Ratio_tournois_{i}_mois"] = ((new_df.groupby(["Player","Tournament"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
-    new_df[f"Ratio_tours_{i}_mois"] = ((new_df.groupby(["Player","Round"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
-  return new_df
+    new_df = df
+# Moyenne roulante des victoires par joueur sur x et y mois en fonction des victoires totales, de la surface, du tournois et des tours 
+
+    # new_df['Year'] = pd.to_datetime(new_df['Year'])
+    # new_df["Year"]= new_df["Year"].dt.date
+    var_mois = [ x , y ]
+    
+    for i in var_mois :
+        new_df = new_df.sort_values(by=["Player","Year"],ascending = True)
+        new_df[f"Ratio_victoire_{i}_mois"] = ((new_df.groupby("Player").rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
+        new_df[f"Ratio_surface_{i}_mois"] = ((new_df.groupby(["Player","Surface"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
+        new_df[f"Ratio_tournois_{i}_mois"] = ((new_df.groupby(["Player","Tournament"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
+        new_df[f"Ratio_tours_{i}_mois"] = ((new_df.groupby(["Player","Round"]).rolling(str(i*30) + "D", min_periods=1, on="Year", closed="both")["Win"].apply(lambda x: x.shift(1).sum() / (len(x) - 1))).fillna(0).values)
+    return new_df
+
 
 # 6 et 18 seront les mois choisis pour la fonction
 new_df = mean_rolling(new_df,6,18)
 new_df = new_df.sort_values(by=["Year"],ascending = True).reset_index(drop= True)
 new_df["Year"] = pd.to_datetime(new_df["Year"])
 new_df["Year"]= new_df["Year"].dt.date
+
 st.write(new_df)
 new_df.to_csv('df_variables_enrichies.csv',index = False)
 new_df["Year"] = pd.to_datetime(new_df["Year"])
@@ -204,35 +129,29 @@ players_choice = st.selectbox('Sélectionner un joueur:', players)
 years = new_df["Year"].loc[new_df["Player"] == players_choice]
 year_choice = st.selectbox('Sélectionner une date', years) 
 st.write('Resultat de la recherche:',new_df.loc[(new_df["Player"] == players_choice)&(new_df["Year"] == year_choice)])
-
-
-
- 
 st.title("Préprocessing et Modélisation")
-
 st.markdown(
- """
-   ## Préprocessing
- """
- )
+  """
+    ## Préprocessing
+  """
+  )
+st.markdown(
+  """
+    :tennis: Les variables :
+  """
+  )
+st.markdown(
+  """
+  Il faut avant de s'attaquer à la modélisation encoder nos variables.
  
-st.markdown(
- """
-   :tennis: Les variables :
- """
- )
-st.markdown(
- """
- Il faut avant de s'attaquer à la modélisation encoder nos variables.
- 
- """
- )
+  """
+  )
 
 new_df_preprocessing = pd.read_csv('df_variables_enrichies.csv',parse_dates=['Year'])
 new_df_preprocessing['Year'] = pd.to_datetime(new_df_preprocessing['Year'])
 new_df_preprocessing['Year'] = new_df_preprocessing['Year'].dt.date
- # Affichage info df df
- # st.write(new_df_preprocessing)
+  # Affichage info df df
+  # st.write(new_df_preprocessing)
  
 col1,col2= st.columns([3,1])
 
@@ -249,54 +168,50 @@ with col2:
             _*Action*_
             """
             )
-st.markdown(
- 
-    """
-     Toutes les variables de type "object" devront être encodées ..."""
-)
+st.markdown(""" Toutes les variables de type "object" devront être encodées ...""")
  
 st.markdown(
- """
- :tennis: Pour l'encodage nous avons choisi la méthodologie suivante :
- - Pour les variables **Player**, **Tournament**, **Series** et **Round** nous remplaçons les noms par des numéros id.
- - Pour la variable **Court** nous remplacons ‘Outdoor’, ‘Indoor’ par 0, 1 et pour la variable **Surface** nous changeons les modes 'Hard', 'Clay’, 'Grass', 'Carpet' par 0, 1, 2, 3.
- - Pour les variables numériques mais qui sont au format texte nous les typons en float.
+  """
+  :tennis: Pour l'encodage nous avons choisi la méthodologie suivante :
+  - Pour les variables **Player**, **Tournament**, **Series** et **Round** nous remplaçons les noms par des numéros id.
+  - Pour la variable **Court** nous remplacons ‘Outdoor’, ‘Indoor’ par 0, 1 et pour la variable **Surface** nous changeons les modes 'Hard', 'Clay’, 'Grass', 'Carpet' par 0, 1, 2, 3.
+  - Pour les variables numériques mais qui sont au format texte nous les typons en float.
 
- """
- )
+  """
+  )
  
- # Encodage des variables 
- # Certaines variables sont catégorielles il faut les passer en numérique
+# Encodage des variables 
+# Certaines variables sont catégorielles il faut les passer en numérique
  
- # Player
+# Player
 Id_player= pd.DataFrame(new_df_preprocessing['Player'].unique(), columns=['Name'])
 Id_player = Id_player.rename_axis('Id_player').reset_index()
 new_df_preprocessing = pd.merge(new_df_preprocessing, Id_player,left_on="Player", right_on="Name")
 new_df_preprocessing["Id_player"]= new_df_preprocessing['Id_player'].astype(float)
  
- # Tournament 
+# Tournament 
  
 Id_tournament= pd.DataFrame(new_df_preprocessing['Tournament'].unique(), columns=['Tourna'])
 Id_tournaments = Id_tournament.rename_axis('Id_tournament').reset_index()
 new_df_preprocessing = pd.merge(new_df_preprocessing, Id_tournaments,left_on="Tournament", right_on="Tourna")
 new_df_preprocessing["Id_tournament"]= new_df_preprocessing['Id_tournament'].astype(float)
  
- # Series
+# Series
  
 Id_Series= pd.DataFrame(new_df_preprocessing['Series'].unique(), columns=['Type_series'])
 Id_Series = Id_Series.rename_axis('Id_series').reset_index()
 new_df_preprocessing = pd.merge(new_df_preprocessing, Id_Series,left_on="Series", right_on='Type_series')
 new_df_preprocessing["Id_series"]= new_df_preprocessing["Id_series"].astype(float)
  
- # Surface
+# Surface
 new_df_preprocessing[ 'Surface' ] = new_df_preprocessing[ 'Surface' ].replace( to_replace =[ 'Hard' , 'Clay' , 'Grass','Carpet' ], value =[0,1,2,3])
 new_df_preprocessing[ 'Surface' ].astype(float)
  
- # Court
+# Court
 new_df_preprocessing[ 'Court' ] = new_df_preprocessing[ 'Court' ].replace( to_replace =[ 'Outdoor' , 'Indoor' ], value =[0,1])
 new_df_preprocessing[ 'Court' ].astype(float)
  
- # Round
+# Round
  
 Id_round= pd.DataFrame(new_df_preprocessing['Round'].unique(), columns=['Type_round'])
 Id_round = Id_round.rename_axis('Id_round').reset_index()
@@ -304,10 +219,10 @@ new_df_preprocessing = pd.merge(new_df_preprocessing, Id_round,left_on="Round", 
 new_df_preprocessing["Id_round"]= new_df_preprocessing["Id_round"].astype(float)
  
 new_df_preprocessing= new_df_preprocessing.drop(['Player', 'Location', 'Tournament',  'Series', 
-     'Round','Name', 'Tourna',
+      'Round','Name', 'Tourna',
     'Type_series',  'Type_round'],axis=1)
  
- # Passer les variables object numériques en float 
+# Passer les variables object numériques en float 
  
 new_df_preprocessing[['BestOf', 'Court', 'Surface', 'Rank', 'SetsWon', 'EloPoints',
 'B365', 'RankDiff', 'Win', 'Id_player', 'Id_tournament', 'Id_series',
@@ -316,26 +231,26 @@ new_df_preprocessing[['BestOf', 'Court', 'Surface', 'Rank', 'SetsWon', 'EloPoint
 'Id_round']].astype(float)
  
 st.markdown(
- """
+  """
  
- Comme le montre le dataframe ci-desous les variables sont bien toutes au format numérique nous pouvons définir nos features :chart_with_upwards_trend:, notre target :dart: et normaliser nos variables .
+  Comme le montre le dataframe ci-desous les variables sont bien toutes au format numérique nous pouvons définir nos features :chart_with_upwards_trend:, notre target :dart: et normaliser nos variables .
 
- """
- )
+  """
+  )
 st.write(new_df_preprocessing.head())
  
 st.markdown(
- """
+  """
   
- :tennis: La variable **"Win"** sera notre target.
+  :tennis: La variable **"Win"** sera notre target.
  
  
- """
- )
+  """
+  )
  
 _left, mid, _right = st.columns(3)
 with _left:
-    st.image("./assets/Diapositive3.PNG",width=650)
+    st.image("assets/Diapositive3.png",width=650)
 
 from sklearn.preprocessing import StandardScaler
  
@@ -344,10 +259,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 
 
- # Trier les dates du dataset 
+# Trier les dates du dataset 
 new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
- # @st.cache(suppress_st_warning=True)
- # @st.cache(allow_output_mutation=True)
+# @st.cache(suppress_st_warning=True)
+# @st.cache(allow_output_mutation=True)
 def split(data):
     df = pd.DataFrame(data)
     df = data.sort_values(by=["Year"],ascending = True)
@@ -394,39 +309,33 @@ X_train,y_train,X_test,y_test = split(new_df_preprocessing)
 
 new_y_test = pd.Series(y_test,index=None)
 
-#new_y_test=y_test  
-
-
 # Définition du modèle
-
-  
- 
-
-
- # Exécution des modèles
- # @st.cache(suppress_st_warning=True)
- # @st.cache(allow_output_mutation=True)
+# Exécution des modèles
+# @st.cache(suppress_st_warning=True)
+# @st.cache(allow_output_mutation=True)
 def train_model():
+    
+     models = []
+     models.append(('Logistic Regression',LogisticRegression(random_state=123)))
+     models.append(('KNeighbors', KNeighborsClassifier()))
+     models.append(('Random Forest', RandomForestClassifier(random_state=123)))
+     accuracies = []
+     names = []
+     
+     for name, model in models:
+         model.fit(X_train,y_train)
+         accuracy = model.score(X_test,y_test)
+         accuracies.append(accuracy)
+         names.append(name)
+         msg = "Résultat pour %s: %f" % (name, accuracy)
+         st.write(msg)
+     fig = plt.figure()
+     plt.bar(names, accuracies)
+     plt.show()
+     return fig
+         
 
-    models = []
-    models.append(('Logistic Regression',LogisticRegression(random_state=123)))
-    models.append(('KNeighbors', KNeighborsClassifier()))
-    models.append(('Random Forest', RandomForestClassifier(random_state=123)))
-    accuracies = []
-    names = []
- 
-    for name, model in models:
-        model.fit(X_train,y_train)
-        accuracy = model.score(X_test,y_test)
-        accuracies.append(accuracy)
-        names.append(name)
-        msg = "Résultat pour %s: %f" % (name, accuracy)
-        st.write(msg)
-    fig = plt.figure()
-    plt.bar(names, accuracies)
-    plt.show()
-    st.pyplot(fig)      
-train_model()
+st.pyplot(train_model())
  
 st.markdown(
 """
@@ -441,10 +350,10 @@ sns.heatmap(cor,ax=ax, cmap='coolwarm');
 st.write(fig)
  
 st.markdown("""
- Nous constatons que la variable "SetsWon" est fortement corrélée avec "Win" ce qui est normal car elle donne une indication sur le nombre de sets gagnés sur le match.
- Par contre cette information nous ne l'avons pas avant le match il faut donc la supprimer des features et relancer le modèle.
+  Nous constatons que la variable "SetsWon" est fortement corrélée avec "Win" ce qui est normal car elle donne une indication sur le nombre de sets gagnés sur le match.
+  Par contre cette information nous ne l'avons pas avant le match il faut donc la supprimer des features et relancer le modèle.
  
- """)
+  """)
  
 st.markdown(""":tennis: 2ème entraînement """)
  
@@ -452,17 +361,17 @@ new_df_preprocessing_demo = new_df_preprocessing.drop("SetsWon",axis=1)
 X_train,y_train,X_test,y_test = split(new_df_preprocessing_demo) 
 
  
-train_model()
+st.pyplot(train_model())
 st.markdown("""
- Ces résultats semblent plus conformes à ce que l’on peut attendre pour ce type de données.  
- Le meilleur modèle est RF avec un score de 0.88, ce qui est meilleur que les prédictions des bookmakers. 
- Nous allons maintenant tenter d’améliorer les performances du modèle. 
- """)
+  Ces résultats semblent plus conformes à ce que l’on peut attendre pour ce type de données.  
+  Le meilleur modèle est RF avec un score de 0.88, ce qui est meilleur que les prédictions des bookmakers. 
+  Nous allons maintenant tenter d’améliorer les performances du modèle. 
+  """)
  
   
- # Fonction split et normalisation des données
- # @st.cache(suppress_st_warning=True)
- # @st.cache(allow_output_mutation=True)
+# Fonction split et normalisation des données
+# @st.cache(suppress_st_warning=True)
+# @st.cache(allow_output_mutation=True)
 def split_normalisation(data,option):
     
   df = pd.DataFrame(data)
@@ -476,7 +385,7 @@ def split_normalisation(data,option):
   data_train = df[df['Year'] < date_split]
   data_test =  df[df['Year'] >= date_split]
 
- # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
+# Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
   X_train = data_train.drop(['Win'], axis=1)
   X_test =  data_test.drop(['Win'], axis=1)
   y_train = data_train['Win']
@@ -503,21 +412,24 @@ def split_normalisation(data,option):
     
   for name, model in models:
         model.fit(X_train,y_train)
+        
         accuracy = model.score(X_test,y_test)
         accuracies.append(accuracy)
         names.append(name)
         data.append([names,accuracies]) 
         # with open(f".\models\{name}.sav",'wb') as f:
-        #   pickle.dump(model,f)   
+        # pickle.dump(model,f)   
         df = pd.DataFrame(list(zip(names,accuracies)), columns=['Noms', f"Scores {x}"])
       
   return df
  
 def importance_variables():
+    RandomForestClassifier(random_state=123).fit(X_train,y_train)
     fig1 = plt.figure(figsize=(14,6))
     train_features = X_train
-    rf_loaded = pickle.load(open('Random Forest.sav', 'rb'))
-    vars_imp = pd.Series(rf_loaded.feature_importances_,index=train_features.columns).sort_values(ascending=False)
+    # rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV")
+    # rf_loaded = pickle.load(open(rf_load_sav,'rb'))
+    vars_imp = pd.Series( RandomForestClassifier(random_state=123).fit(X_train,y_train).feature_importances_,index=train_features.columns).sort_values(ascending=False)
     sns.barplot(x=vars_imp.index,y=vars_imp)
     plt.xticks(rotation=90)
     plt.xlabel('Variables')
@@ -529,20 +441,20 @@ def importance_variables():
     return st.pyplot(fig1)
 importance_variables()
 st.markdown("""
- :tennis: Amélioration du modèle RF
+  :tennis: Amélioration du modèle RF
  
- Nous allons procéder en deux étapes: nous allons tout d’abord identifier les paramètres qui  apportent le meilleur gain de performances en changeant les variables d’entraînement, puis  nous réglerons ensuite les hyperparamètres. 
- """)
+  Nous allons procéder en deux étapes: nous allons tout d’abord identifier les paramètres qui  apportent le meilleur gain de performances en changeant les variables d’entraînement, puis  nous réglerons ensuite les hyperparamètres. 
+  """)
 
 st.markdown("""
- - Analyses de la performance des variables
+  - Analyses de la performance des variables
  
- Une première approche consiste à utiliser de façon sélective les différents paramètres.  
+  Une première approche consiste à utiliser de façon sélective les différents paramètres.  
 
 
- """)
+  """)
 
-#Features d'origine à conserver
+# Features d'origine à conserver
 drop_variable1 = ['EloPoints','RankDiff', 'Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' , 'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
 df1 = new_df_preprocessing_demo.drop(drop_variable1,axis=1)
 df1 = split_normalisation(df1,1)
@@ -556,20 +468,20 @@ df2 = new_df_preprocessing_demo.drop(drop_variable2,axis=1)
 df2 = split_normalisation(df2,2)
 
  
-#"Features d'origine + Points ELO + Diff. de classement "  à conserver
+# "Features d'origine + Points ELO + Diff. de classement "  à conserver
 drop_variable3 = ['Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' ,
 'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
 df3 = new_df_preprocessing_demo.drop(drop_variable3,axis=1)
 df3 = split_normalisation(df3,3)
 
  
-#"Features d'origine + Points ELO + Diff. de classement + Moy.roulantes 6 mois"  à conserver
+# "Features d'origine + Points ELO + Diff. de classement + Moy.roulantes 6 mois"  à conserver
 drop_variable4 = ['Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
 df4 = new_df_preprocessing_demo.drop(drop_variable4,axis=1)
 df4 = split_normalisation(df4,4)
  
 
-#"Features d'origine + Points ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"  à conserver
+# "Features d'origine + Points ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"  à conserver
 df5 = new_df_preprocessing_demo  
 df5 = split_normalisation(df5,5)
  
@@ -578,7 +490,7 @@ df5 = split_normalisation(df5,5)
 # model_choisi = st.selectbox(label = "Choix des Features", options = ["Features d'origine ", "Features d'origine + Pts ELO", "Features d'origine + Pts ELO + Diff. de classement","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"])
 st.markdown("""
     Bilan des performances des différentes options
-           """)
+            """)
 
 df6 = df1
 df1 = df1["Scores 1"]
@@ -619,14 +531,14 @@ elif  selection == selections[4]:
     st.write(data5)
  
     st.markdown("""
-               Nous observons que le Random Forest obtient les meilleurs résultats mais nous pouvons encore les améliorer en optimisant les hyperparamètres.
-                     """)
+                Nous observons que le Random Forest obtient les meilleurs résultats mais nous pouvons encore les améliorer en optimisant les hyperparamètres.
+                      """)
 st.markdown(""" 
         - L'optimisation
           """)
  
- #rf_loaded = pickle.load(open('.\models\Random Forest.sav', 'rb'))
- # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))   
+# rf_loaded = pickle.load(open('.\models\Random Forest.sav', 'rb'))
+# grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))   
 
 
 
@@ -636,49 +548,43 @@ st.markdown("""
 # @st.cache(allow_output_mutation=True)
 
 def optimisation_models():
-    grid_rf = pickle.load(open('\Grid_Random Forest.sav', 'rb'))
+    # rid_rf = pickle.load(open(grid_rf_load_sav, 'rb'))
     # Optimisation du modèle
-    # rf = RandomForestClassifier(random_state=123) 
-    # param_grid_rf = [{ 'n_estimators' : [1000] ,
-    # 'min_samples_leaf' :  [1 ] ,
-    # 'max_features' :  ['sqrt'  ]}] 
+    rf = RandomForestClassifier(random_state=123) 
+    param_grid_rf = [{ 'n_estimators' : [1000] ,
+    'min_samples_leaf' :  [1 ] ,
+    'max_features' :  ['sqrt']}] 
     # param_grid_rf = [{ 'n_estimators' : [ 10 , 50 , 100 , 250 , 500 , 1000 ],
     # 'min_samples_leaf' : [ 1 , 3 , 5 ],
     # 'max_features' : [ 'sqrt' , 'log2' ]}] 
-    # grid_rf = GridSearchCV(estimator=rf_loaded, param_grid=param_grid_rf)
+    grid_rf = GridSearchCV(estimator=rf, param_grid=param_grid_rf)
     # Entraînement du modèle
     # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
     grid_rf.fit(X_train, y_train)
     # with open('.\models\Grid_Random Forest.sav','wb') as f:
     #     pickle.dump( grid_rf,f)
-    st.write("Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_))
-    st.write("Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test)))
-  
-    
+    best_param = "Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_)
+    score_rf =  "Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test))
     # Prédiction du modèle
     #y_pred_rf = pickle.load(open('.\models\y_pred_rf_sauv.csv', 'rb'))
     y_pred_rf = grid_rf.predict(X_test) 
     #with open('.\models\y_pred_rf_sauv.csv','wb') as f:
         #pickle.dump( y_pred_rf,f)
     
-    st.text('Rapport de classification:\n ' + classification_report(y_test, y_pred_rf))
-    return   y_pred_rf,grid_rf,st.write("Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_)),
-    st.write("Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test))),st.text('Rapport de classification:\n ' + classification_report(y_test, y_pred_rf))
-  
-if st.button('Hyperparamètres'):
-    optimisation_models() 
-    st.markdown("""
-              Le score est de 0.88 en optimisant meilleur que les prédictions des bookmakers nous avons donc répondu à notre première problématique "Battre les bookmakers c'est donc bien possible".
-              L’accuracy calculée sur le jeu de validation est de 88 % , elle concerne l’ensemble des
-              prédictions, qu’il s’agisse de la prédiction des victoires ou des défaites.
-           Le F1-score  est aussi proche des 90 % ce qui suggère que notre modèle
-              est relativement robuste et équilibré. 
-            
-              Il nous reste désormais à déterminer la stratégie de paris.  """)       
+    rap_classif = 'Rapport de classification:\n ' + classification_report(y_test, y_pred_rf)
+    return   y_pred_rf,grid_rf,best_param,score_rf,rap_classif
+
+y_pred_rf,grid_rf,best_param,score_rf,rap_classif = optimisation_models()
+
+if st.button('Hyperparamètres',key=14):
+       st.write(best_param)
+       st.write(score_rf)
+       st.text(rap_classif)
+        
+      
 
 
-
-#title = "Stratégie"
+# title = "Stratégie"
 sidebar_name = "Stratégie et Conclusion"
 
 st.title("Stratégie et Conclusion")
@@ -763,20 +669,20 @@ mask_var = (data_var['Year'] >= start_date_var) & (data_var['Year'] <= end_date_
 data_var_mask = data_var.loc[mask_var]
 
 
-grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
+# grid_rf = pickle.load(open(grid_rf_load_sav, 'rb'))
 probs = grid_rf.predict_proba(X_test)
 
 def paris2(gain = 0,mise_totale = 0 , mise_de_depart =  mise_de_depart , seuil = 0.8 ):
-   y_pred_proba = probs
-   for i,probas in enumerate (y_pred_proba):
+    y_pred_proba = probs
+    for i,probas in enumerate (y_pred_proba):
       cotes = data_var['B365'].iloc[i]
       if probas[1] >= seuil :
-           if y_test.iloc[i]== 1:
-               gain += round((mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil )) * (cotes - 1))
-           mise_totale += round(mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil ))
-   st.write("La somme pariée serait de", mise_totale, "euros et le gain prédit de", gain,"euros.")
-   st.write("Soit",round( gain/mise_totale,2)*100,"% de bénéfices")
-   paris2()
+            if y_test.iloc[i]== 1:
+                gain += round((mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil )) * (cotes - 1))
+            mise_totale += round(mise_de_depart * ( probas[1] - seuil ) / ( 1 - seuil ))
+    st.write("La somme pariée serait de", mise_totale, "euros et le gain prédit de", gain,"euros.")
+    st.write("Soit",round( gain/mise_totale,2)*100,"% de bénéfices")
+    paris2()
  
 st.markdown("""La somme pariée serait de 20600 euros et le gain prédit de 7843 euros.Soit 38.0 % de bénéfices""")
 st.markdown("""La dernière stratégie serait la plus optimale car le bénéfice est de 38,0 % légèrement supérieur au bénéfice des préconisations bookmakers ( 36,0 %)  Surtout la somme engagée pour la dernière stratégie est de 20600 euros contre 40970 euros si on suit les préconisations bookmakersNotre stratégie battrait les bookmakers ...""")
