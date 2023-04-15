@@ -351,7 +351,8 @@ Les performances de nos modèles laissent penser qu’il y a sans doute un surap
 Pour ce faire, nous avons établi une *matrice de  corrélation* :
 """
 )
-cor = new_df_preprocessing.corr()
+cor = new_df_preprocessing.select_dtypes(include='number').corr()
+
 fig, ax = plt.subplots(figsize=(12,10))
 sns.heatmap(cor,ax=ax, cmap='coolwarm');
 st.write(fig)
