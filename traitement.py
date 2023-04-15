@@ -360,22 +360,19 @@ def split(data):
     y_train = data_train['Win']
     y_test =  data_test['Win']
     
-    
     X_train = X_train.select_dtypes('float')
     X_test = X_test.select_dtypes('float')
-    
     
     # On normalise nos données numériques :
     scaler = StandardScaler()
     X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns = X_train.columns)
     X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
     
-    
     X_train = X_train_scaled
     X_test = X_test_scaled
     
-    #y_test = y_test.reset_index(drop=True)
     return X_train,y_train,X_test,y_test
+
 st.markdown("""Nous pouvons passer à la modélisation.""")
 st.markdown("---")
 st.markdown(
