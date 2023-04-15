@@ -331,7 +331,7 @@ st.markdown(
  
 _left, mid, _right = st.columns(3)
 with _left:
-    st.image("./assets/Diapositive3.png",width=650)
+    st.image("./assets/Diapositive3.PNG",width=650)
 
 from sklearn.preprocessing import StandardScaler
  
@@ -348,10 +348,6 @@ def split(data):
     df = pd.DataFrame(data)
     df = data.sort_values(by=["Year"],ascending = True)
     
-    # Convertir la colonne "Year" en type datetime si nécessaire
-    if not pd.api.types.is_datetime64_any_dtype(df['Year']):
-        df['Year'] = pd.to_datetime(df['Year'], format='%Y')
-    
     # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
     date_split = pd.Timestamp(2016, 1, 1)
     data_train = df[df['Year'] < date_split]
@@ -364,21 +360,22 @@ def split(data):
     y_train = data_train['Win']
     y_test =  data_test['Win']
     
+    
     X_train = X_train.select_dtypes('float')
     X_test = X_test.select_dtypes('float')
+    
     
     # On normalise nos données numériques :
     scaler = StandardScaler()
     X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns = X_train.columns)
     X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
     
+    
     X_train = X_train_scaled
     X_test = X_test_scaled
     
+    #y_test = y_test.reset_index(drop=True)
     return X_train,y_train,X_test,y_test
-
-
-
 st.markdown("""Nous pouvons passer à la modélisation.""")
 st.markdown("---")
 st.markdown(
@@ -422,11 +419,10 @@ def train_model():
         msg = "Résultat pour %s: %f" % (name, accuracy)
         st.write(msg)
     fig = plt.figure()
-    sns.barplot(x=names, y=accuracies)
+    sns.barplot(names, accuracies)
     plt.show()
     st.pyplot(fig)      
 train_model()
-
  
 st.markdown(
 """
