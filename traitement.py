@@ -48,8 +48,7 @@ data = load_data()
 
 
 def predict(df):
-    data = pd.DataFrame()
-    data = df
+    data = df.copy()
     data = data.dropna()
 
     # Synthèse des prévisions des bookmakers dans un dataframe 
@@ -58,7 +57,7 @@ def predict(df):
 
     # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
     data['Victoire_reel'] = "V"
-    data['Predict_bkm'] = data[['Bkm_prediction']] 
+    data['Predict_bkm'] = data['Bkm_prediction'] 
     data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
 
     # Le pourcentage de bonnes prédictions
@@ -82,17 +81,20 @@ def predict(df):
     winners.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface','Round', 'Rank', 'SetsWon', 'EloPoints', 'B365','RankDiff','Predict_W_Bkm']
     winners['Win'] = 1
     losers = pd.DataFrame(data = [data.Loser, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.LRank, data.Lsets, data.elo_loser,data.B365L, data.RankDiff, data["Bkm_predict_vict"]]).T
-    losers.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface', 
-    'Round', 'Rank', 'SetsWon', 'EloPoints','B365', 'RankDiff','Predict_W_Bkm']
+    losers.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface',     'Round', 'Rank', 'SetsWon', 'EloPoints','B365', 'RankDiff','Predict_W_Bkm']
     losers['Win'] = 0
     new_df = pd.concat([winners, losers], axis = 0)
+    new_df['Year'] = pd.to_datetime(new_df['Year']).dt.date
+    new_df = new_df.drop('Predict_W_Bkm',axis = 1, errors='ignore')
     return new_df
+
+
 
 new_df = predict(data)
 new_df['Year'] = pd.to_datetime(new_df['Year'])
 new_df_strategie = new_df.sort_values(by=["Year"],ascending = True)
-new_df = new_df_strategie.drop('Predict_W_Bkm',axis = 1)
-print(new_df)
+# new_df = new_df_strategie.drop('Predict_W_Bkm',axis = 1)
+
 
 
 # Moyenne roulante stat joueurs
@@ -261,11 +263,10 @@ from sklearn.ensemble import RandomForestClassifier
 
 # Trier les dates du dataset 
 new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
-# @st.cache(suppress_st_warning=True)
-# @st.cache(allow_output_mutation=True)
+
 def split(data):
     df = pd.DataFrame(data)
-    df = data.sort_values(by=["Year"],ascending = True)
+    df = df.sort_values(by=["Year"],ascending = True)
     
     # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
     date_split = pd.Timestamp(2016, 1, 1)
@@ -295,6 +296,7 @@ def split(data):
     
     #y_test = y_test.reset_index(drop=True)
     return X_train,y_train,X_test,y_test
+
 st.markdown("""Nous pouvons passer à la modélisation.""")
 st.markdown("---")
 st.markdown(
@@ -308,6 +310,7 @@ st.markdown(""":tennis: 1er entraînement""")
 X_train,y_train,X_test,y_test = split(new_df_preprocessing) 
 
 new_y_test = pd.Series(y_test,index=None)
+
 
 # Définition du modèle
 # Exécution des modèles
