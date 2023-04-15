@@ -94,7 +94,7 @@ new_df = predict(data)
 new_df['Year'] = pd.to_datetime(new_df['Year'])
 new_df_strategie = new_df.sort_values(by=["Year"],ascending = True)
 # new_df = new_df_strategie.drop('Predict_W_Bkm',axis = 1)
-
+new_df = new_df_strategie.copy()
 
 
 # Moyenne roulante stat joueurs
