@@ -348,6 +348,10 @@ def split(data):
     df = pd.DataFrame(data)
     df = data.sort_values(by=["Year"],ascending = True)
     
+    # Convertir la colonne "Year" en type datetime si nécessaire
+    if not pd.api.types.is_datetime64_any_dtype(df['Year']):
+        df['Year'] = pd.to_datetime(df['Year'], format='%Y')
+    
     # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
     date_split = pd.Timestamp(2016, 1, 1)
     data_train = df[df['Year'] < date_split]
@@ -372,6 +376,7 @@ def split(data):
     X_test = X_test_scaled
     
     return X_train,y_train,X_test,y_test
+
 
 
 st.markdown("""Nous pouvons passer à la modélisation.""")
