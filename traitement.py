@@ -317,6 +317,9 @@ new_y_test = pd.Series(y_test, index=None)
 # Exécution des modèles
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 def train_model():
     
      models = []
@@ -370,7 +373,8 @@ st.markdown("""
   Ces résultats semblent plus conformes à ce que l’on peut attendre pour ce type de données.  
   Le meilleur modèle est RF avec un score de 0.88, ce qui est meilleur que les prédictions des bookmakers. 
   Nous allons maintenant tenter d’améliorer les performances du modèle. 
-  """)
+  """) 
+
  
   
 # Fonction split et normalisation des données
