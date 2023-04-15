@@ -354,7 +354,7 @@ Pour ce faire, nous avons établi une *matrice de  corrélation* :
 cor = new_df_preprocessing.select_dtypes(include='number').corr()
 
 fig, ax = plt.subplots(figsize=(12,10))
-sns.heatmap(cor,ax=ax, cmap='coolwarm');
+sns.heatmap(cor,ax=ax, cmap='coolwarm', keepdims=True);
 st.write(fig)
  
 st.markdown("""
