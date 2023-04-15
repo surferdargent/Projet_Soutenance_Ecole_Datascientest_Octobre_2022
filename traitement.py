@@ -406,7 +406,7 @@ def split_normalisation(data,option):
   X_test = X_test.select_dtypes('float')
 
 
-# On normalise nos données numériques :
+# On normalise nos données numériques   :
   scaler = StandardScaler()
   X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns = X_train.columns)
   X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
