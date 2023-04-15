@@ -373,6 +373,7 @@ def split(data):
     
     return X_train,y_train,X_test,y_test
 
+
 st.markdown("""Nous pouvons passer à la modélisation.""")
 st.markdown("---")
 st.markdown(
