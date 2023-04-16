@@ -382,7 +382,7 @@ st.markdown("""
 # Fonction split et normalisation des données
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
-def split_normalisation(data,option):
+def split_normalisation(data,option) :
     
   df = pd.DataFrame(data)
   df = data.sort_values(by=["Year"],ascending = True)
