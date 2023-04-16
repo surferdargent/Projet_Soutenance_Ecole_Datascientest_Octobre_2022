@@ -351,11 +351,12 @@ Les performances de nos modèles laissent penser qu’il y a sans doute un surap
 Pour ce faire, nous avons établi une *matrice de  corrélation* :
 """
 )
-cor = new_df_preprocessing.select_dtypes(include='number').corr()
-
+cor = new_df_preprocessing.corr(numeric_only=True)
 fig, ax = plt.subplots(figsize=(12,10))
-sns.heatmap(cor,ax=ax, cmap='coolwarm', keepdims=True);
+sns.heatmap(cor, ax=ax, cmap='coolwarm', label='Heatmap Correlation')
+
 st.write(fig)
+
  
 st.markdown("""
   Nous constatons que la variable "SetsWon" est fortement corrélée avec "Win" ce qui est normal car elle donne une indication sur le nombre de sets gagnés sur le match.
