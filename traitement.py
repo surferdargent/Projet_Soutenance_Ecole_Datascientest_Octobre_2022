@@ -317,7 +317,7 @@ new_y_test = pd.Series(y_test, index=None)
 # Exécution des modèles
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
-import matplotlib.pyplot as plt
+
 import seaborn as sns
 
 def train_model():
@@ -511,7 +511,7 @@ df3 = df3["Scores 3"]
 df4 = df4["Scores 4"]
 df5 = df5["Scores 5"]
 df6=df6["Noms"]
-@st.cache_resource()
+@st.cache
 def creat_df():
     
     data1 =  pd.concat([df6,df1],axis=1)
