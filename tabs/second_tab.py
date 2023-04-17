@@ -108,31 +108,44 @@ def run():
     
     @st.cache_data()
     def predict(df):
-        # Supprimer les lignes avec des valeurs manquantes
-        data = df.dropna()
+        data = pd.DataFrame()
+        data = df
+        data = data.dropna()
     
-        # Calculer la prédiction du bookmaker B365 (0 pour la défaite et 1 pour la victoire)
-        data['Bkm_prediction'] = np.argmin(data[['B365W', 'B365L']], axis=1)
-        data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1], value=['D', 'V'])
+        # Synthèse des prévisions des bookmakers dans un dataframe 
+        data['Bkm_prediction'] = data[['B365W','B365L']].apply(lambda x: np.argmin(x), axis=1)
+        data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1], value=['V', 'D'])
     
         # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
         data['Victoire_reel'] = "V"
+        data['Predict_bkm'] = data[['Bkm_prediction']] 
+        data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
     
-        # Calculer le pourcentage de bonnes prédictions des bookmakers
-        bkm_accuracy = (data['Victoire_reel'] == data['Bkm_prediction']).value_counts(normalize=True)[True] * 100
-        st.markdown(f"Le pourcentage de bonnes prédictions des bookmakers est de : {bkm_accuracy:.2f}%")
+        # Le pourcentage de bonnes prédictions
+        data['Bkm_prediction'] = data['Victoire_reel']==data['Bkm_prediction']
+        label = data['Bkm_prediction'].value_counts().index
+        fig = plt.figure(figsize=(2,2))
+        plt.pie(x=data['Bkm_prediction'].value_counts().values, 
+        autopct="%.1f%%", 
+        labels=label,
+        explode = [ 0, 0.2], 
+        pctdistance=0.5,
+        shadow = True)
+        plt.title('Pourcentage de bonnes prédictions des bookmakers');
+        st.pyplot(fig)
+     
     
-        # Diviser le dataframe en deux en ayant un joueur par ligne en créant une colonne Win en mettant 0 si le joueur est perdant et 1 si il est gagnant
-        winners = data[['Winner', 'Location', 'Tournament', 'Date', 'Best of', 'Series', 'Court', 'Surface', 'Round', 'WRank', 'Wsets', 'elo_winner', 'B365W', 'LRank', 'Bkm_prediction']]
-        winners.columns = ['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface', 'Round', 'Rank', 'SetsWon', 'EloPoints', 'B365', 'RankDiff', 'Predict_W_Bkm']
+        # Diviser le dataframe en deux en ayant un joueur par ligne en créant une colonne Win en mettant 0 si le joueur est perdant et 1 si il est gagnant 
+        data['RankDiff'] = data.LRank - data.WRank
+    
+        winners = pd.DataFrame(data = [data.Winner, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.WRank, data.Wsets, data.elo_winner,data.B365W, data.RankDiff,data["Bkm_predict_vict"]]).T
+        winners.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface','Round', 'Rank', 'SetsWon', 'EloPoints', 'B365','RankDiff','Predict_W_Bkm']
         winners['Win'] = 1
-    
-        losers = data[['Loser', 'Location', 'Tournament', 'Date', 'Best of', 'Series', 'Court', 'Surface', 'Round', 'LRank', 'Lsets', 'elo_loser', 'B365L', 'WRank', 'Bkm_prediction']]
-        losers.columns = ['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface', 'Round', 'Rank', 'SetsWon', 'EloPoints', 'B365', 'RankDiff', 'Predict_W_Bkm']
+        losers = pd.DataFrame(data = [data.Loser, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.LRank, data.Lsets, data.elo_loser,data.B365L, data.RankDiff, data["Bkm_predict_vict"]]).T
+        losers.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface', 
+        'Round', 'Rank', 'SetsWon', 'EloPoints','B365', 'RankDiff','Predict_W_Bkm']
         losers['Win'] = 0
-    
-        new_df = pd.concat([winners, losers], axis=0, ignore_index=True)
-    
+        new_df = pd.concat([winners, losers], axis = 0)
         return new_df
     new_df = predict(data)
     new_df['Year'] = pd.to_datetime(new_df['Year'])

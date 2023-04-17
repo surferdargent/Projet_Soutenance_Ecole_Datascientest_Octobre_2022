@@ -48,7 +48,8 @@ data = load_data()
 
 
 def predict(df):
-    data = df.copy()
+    data = pd.DataFrame()
+    data = df
     data = data.dropna()
 
     # Synthèse des prévisions des bookmakers dans un dataframe 
@@ -57,9 +58,8 @@ def predict(df):
 
     # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
     data['Victoire_reel'] = "V"
-    data['Predict_bkm'] = data['Bkm_prediction'] 
+    data['Predict_bkm'] = data[['Bkm_prediction']] 
     data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
-
 
     # Le pourcentage de bonnes prédictions
     data['Bkm_prediction'] = data['Victoire_reel']==data['Bkm_prediction']
@@ -82,11 +82,10 @@ def predict(df):
     winners.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface','Round', 'Rank', 'SetsWon', 'EloPoints', 'B365','RankDiff','Predict_W_Bkm']
     winners['Win'] = 1
     losers = pd.DataFrame(data = [data.Loser, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.LRank, data.Lsets, data.elo_loser,data.B365L, data.RankDiff, data["Bkm_predict_vict"]]).T
-    losers.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface',     'Round', 'Rank', 'SetsWon', 'EloPoints','B365', 'RankDiff','Predict_W_Bkm']
+    losers.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface', 
+    'Round', 'Rank', 'SetsWon', 'EloPoints','B365', 'RankDiff','Predict_W_Bkm']
     losers['Win'] = 0
     new_df = pd.concat([winners, losers], axis = 0)
-    new_df['Year'] = pd.to_datetime(new_df['Year']).dt.date
-    new_df = new_df.drop('Predict_W_Bkm',axis = 1, errors='ignore')
     return new_df
 
 
