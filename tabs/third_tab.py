@@ -509,8 +509,8 @@ def run():
     # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
 
 
-    @st.cache(hash_funcs={pd.DataFrame: lambda x: x.to_dict()})
-    def optimisation_models(X_train, y_train, X_test, y_test):
+    @st.cache_data()
+    def optimisation_models():
         # rid_rf = pickle.load(open(grid_rf_load_sav, 'rb'))
         # Optimisation du modèle
         rf = RandomForestClassifier(random_state=123)
@@ -537,7 +537,7 @@ def run():
         rap_classif = 'Rapport de classification:\n ' + classification_report(y_test, y_pred_rf)
         return   y_pred_rf,grid_rf,best_param,score_rf,rap_classif
 
-    y_pred_rf,grid_rf,best_param,score_rf,rap_classif= optimisation_models(X_train, y_train, X_test, y_test)
+    y_pred_rf,grid_rf,best_param,score_rf,rap_classif= optimisation_models()
 
     if st.button('Hyperparamètres',key=15):
 
