@@ -38,7 +38,7 @@ def run():
         Nous avons aussi dans la colonne "Comment" des indications sur la façon dont chaque match s'est terminé( disqualification, abandon,...)
         """
     )
-
+    @st.cache_data()
     def load_data():
         data = pd.read_csv('atp_data.csv', parse_dates=['Date'])
         data["Date"] = pd.to_datetime(data["Date"])
