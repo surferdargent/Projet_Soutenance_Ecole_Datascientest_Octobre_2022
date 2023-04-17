@@ -60,6 +60,7 @@ def predict(df):
     data['Predict_bkm'] = data['Bkm_prediction'] 
     data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
 
+
     # Le pourcentage de bonnes prédictions
     data['Bkm_prediction'] = data['Victoire_reel']==data['Bkm_prediction']
     label = data['Bkm_prediction'].value_counts().index
