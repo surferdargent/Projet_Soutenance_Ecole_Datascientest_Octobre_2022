@@ -185,7 +185,7 @@ def run():
     # Trier les dates du dataset
     new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
 
-    @st.cache(suppress_st_warning=True,allow_output_mutation=True)
+    @st.cache_data()
     def split(data):
         df = pd.DataFrame(data)
         df = data.sort_values(by=["Year"],ascending = True)
@@ -327,7 +327,7 @@ def run():
 
     # Fonction split et normalisation des données
 
-    @st.cache_data(suppress_st_warning=True,allow_output_mutation=True)
+    @st.cache_data()
     def split_normalisation(data,option):
 
       df = pd.DataFrame(data)
@@ -455,7 +455,7 @@ def run():
     df6=df6["Noms"]
 
 
-    @st.cache_data(suppress_st_warning=True,allow_output_mutation=True)
+    @st.cache_data()
     def creat_df():
 
          data1 =  pd.concat([df6,df1],axis=1)
@@ -510,7 +510,7 @@ def run():
     # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
 
 
-    @st.cache_data(suppress_st_warning=True,allow_output_mutation=True)
+    @st.cache_data()
     def optimisation_models():
         # rid_rf = pickle.load(open(grid_rf_load_sav, 'rb'))
         # Optimisation du modèle
