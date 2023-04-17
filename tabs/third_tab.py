@@ -280,7 +280,7 @@ def run():
     """)
 
     st.markdown(""":tennis: 2ème entraînement """)
-    @st.cache_data()
+
     def split1(data):
         df = pd.DataFrame(data)
         df = data.sort_values(by=["Year"],ascending = True)

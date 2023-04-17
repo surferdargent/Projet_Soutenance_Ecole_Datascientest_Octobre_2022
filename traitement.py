@@ -253,7 +253,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 # Trier les dates du dataset 
 new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
-@st.cache_data()
+
 def split(data):
     df = pd.DataFrame(data)
     df = df.sort_values(by=["Year"], ascending=True)
