@@ -172,7 +172,7 @@ def run():
     
         """
     )
-        
+    @st.cache_data()    
     def mean_rolling(df, x, y):
         """
         Cette fonction calcule la moyenne roulante des victoires par joueur sur x et y mois en fonction des victoires totales,

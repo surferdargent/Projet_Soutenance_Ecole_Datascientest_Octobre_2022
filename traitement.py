@@ -26,17 +26,6 @@ from sklearn.neighbors import KNeighborsClassifier
 sns.set_theme()  
 
 
-# download data set
-# https://drive.google.com/file/d/1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV/view?usp=share_link
-
-# def load_models():
-#     rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV")
-#     grid_rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb&confirm=t")
-# #gdown "https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb"
-#     return rf_load_sav,grid_rf_load_sav
-
-# rf_load_sav,grid_rf_load_sav = load_models()
-
 
 @st.cache_data()
 def load_data():
@@ -46,7 +35,7 @@ def load_data():
     return data
 data = load_data()
 
-
+@st.cache_data()
 def predict(df):
     data = df.copy()
     data = data.dropna()
@@ -98,6 +87,7 @@ new_df = new_df_strategie.copy()
 
 
 # Moyenne roulante stat joueurs
+@st.cache_data()
 def mean_rolling(df,x,y):
 
     new_df = df
@@ -263,7 +253,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 # Trier les dates du dataset 
 new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
-
+@st.cache_data()
 def split(data):
     df = pd.DataFrame(data)
     df = df.sort_values(by=["Year"], ascending=True)
@@ -319,7 +309,7 @@ new_y_test = pd.Series(y_test, index=None)
 # @st.cache(allow_output_mutation=True)
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+@st.cache_data()
 def train_model():
     
      models = []
@@ -381,6 +371,7 @@ st.markdown("""
 # Fonction split et normalisation des données
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
+@st.cache_data()
 def split_normalisation(data,option):
     
   df = pd.DataFrame(data)
@@ -433,8 +424,9 @@ def split_normalisation(data,option):
         df = pd.DataFrame(list(zip(names,accuracies)), columns=['Noms', f"Scores {x}"])
       
   return df
- 
-def importance_variables():
+
+@st.cache_data()
+def importance_variables(X_train, y_train):
     RandomForestClassifier(random_state=123).fit(X_train,y_train)
     fig1 = plt.figure(figsize=(14,6))
     train_features = X_train
@@ -449,8 +441,11 @@ def importance_variables():
     plt.show()
     st.write("""Ci dessous l'importance des variables nous donne des indications sur le poids de chaque variable sur notre modèle.
     """)  
-    return st.pyplot(fig1)
-importance_variables()
+    return fig1
+
+fig1 = importance_variables(X_train, y_train)
+st.pyplot(fig1)
+
 st.markdown("""
   :tennis: Amélioration du modèle RF
  
