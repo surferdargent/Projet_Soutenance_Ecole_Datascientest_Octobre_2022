@@ -558,16 +558,17 @@ st.markdown("""
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
 
-def optimisation_models():
+@st.cache(hash_funcs={pd.DataFrame: lambda x: x.to_dict()})
+def optimisation_models(X_train, y_train, X_test, y_test):
     # rid_rf = pickle.load(open(grid_rf_load_sav, 'rb'))
     # Optimisation du modèle
-    rf = RandomForestClassifier(random_state=123) 
+    rf = RandomForestClassifier(random_state=123)
     param_grid_rf = [{ 'n_estimators' : [1000] ,
     'min_samples_leaf' :  [1 ] ,
-    'max_features' :  ['sqrt']}] 
+    'max_features' :  ['sqrt'  ]}]
     # param_grid_rf = [{ 'n_estimators' : [ 10 , 50 , 100 , 250 , 500 , 1000 ],
     # 'min_samples_leaf' : [ 1 , 3 , 5 ],
-    # 'max_features' : [ 'sqrt' , 'log2' ]}] 
+    # 'max_features' : [ 'sqrt' , 'log2' ]}]
     grid_rf = GridSearchCV(estimator=rf, param_grid=param_grid_rf)
     # Entraînement du modèle
     # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
@@ -578,14 +579,14 @@ def optimisation_models():
     score_rf =  "Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test))
     # Prédiction du modèle
     #y_pred_rf = pickle.load(open('.\models\y_pred_rf_sauv.csv', 'rb'))
-    y_pred_rf = grid_rf.predict(X_test) 
+    y_pred_rf = grid_rf.predict(X_test)
     #with open('.\models\y_pred_rf_sauv.csv','wb') as f:
         #pickle.dump( y_pred_rf,f)
-    
+
     rap_classif = 'Rapport de classification:\n ' + classification_report(y_test, y_pred_rf)
     return   y_pred_rf,grid_rf,best_param,score_rf,rap_classif
 
-y_pred_rf,grid_rf,best_param,score_rf,rap_classif = optimisation_models()
+y_pred_rf,grid_rf,best_param,score_rf,rap_classif= optimisation_models(X_train, y_train, X_test, y_test)
 
 if st.button('Hyperparamètres',key=14):
        st.write(best_param)
