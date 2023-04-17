@@ -317,7 +317,7 @@ new_y_test = pd.Series(y_test, index=None)
 # Exécution des modèles
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
-
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 def train_model():
@@ -353,8 +353,7 @@ Pour ce faire, nous avons établi une *matrice de  corrélation* :
 )
 cor = new_df_preprocessing.corr(numeric_only=True)
 fig, ax = plt.subplots(figsize=(12,10))
-sns.heatmap(cor, ax=ax, cmap='coolwarm', label='Heatmap Correlation')
-
+sns.heatmap(cor, ax=ax, cmap='coolwarm')
 st.write(fig)
 
  
@@ -382,7 +381,7 @@ st.markdown("""
 # Fonction split et normalisation des données
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
-def split_normalisation(data,option) :
+def split_normalisation(data,option):
     
   df = pd.DataFrame(data)
   df = data.sort_values(by=["Year"],ascending = True)
@@ -511,7 +510,7 @@ df3 = df3["Scores 3"]
 df4 = df4["Scores 4"]
 df5 = df5["Scores 5"]
 df6=df6["Noms"]
-@st.cache
+@st.cache()
 def creat_df():
     
     data1 =  pd.concat([df6,df1],axis=1)
