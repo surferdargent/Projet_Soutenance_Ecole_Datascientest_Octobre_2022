@@ -3,8 +3,8 @@ numpy
 pandas
 Pillow
 scipy
-streamlit==1.13.0
-sklearn
+streamlit==1.21.0
+scikit-learn
 geopandas
 geoplot
 seaborn
