@@ -38,7 +38,7 @@ sns.set_theme()
 # rf_load_sav,grid_rf_load_sav = load_models()
 
 
-
+@st.cache_data()
 def load_data():
     data = pd.read_csv('atp_data.csv',parse_dates=['Date'])
     data["Date"] = pd.to_datetime(data["Date"])
