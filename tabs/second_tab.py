@@ -12,7 +12,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+from traitement import mean_rolling
 title = "Datavisualisation"
 sidebar_name = "Datavisualisation"
 
@@ -172,47 +172,11 @@ def run():
     
         """
     )
-    #@st.cache_data()    
-    def mean_rolling(df, x, y):
-        """
-        Cette fonction calcule la moyenne roulante des victoires par joueur sur x et y mois en fonction des victoires totales,
-        de la surface, du tournoi et des tours.
-        
-        :param df: le dataframe de données
-        :param x: la période de temps en mois pour la première moyenne roulante
-        :param y: la période de temps en mois pour la deuxième moyenne roulante
-        :return: le dataframe de données avec deux colonnes supplémentaires pour chaque moyenne roulante calculée
-        """
-        df['Year'] = pd.to_datetime(df['Year'])
-        var_mois = [x, y]
-    
-        for i in var_mois:
-            df = df.sort_values(by=['Player', 'Year'], ascending=True)
-            col_name = f'Ratio_victoire_{i}_mois'
-            df[col_name] = (
-                df.groupby('Player')['Win']
-                .apply(lambda x: x.rolling(f'{i}M').sum().shift().fillna(0) / (x.rolling(f'{i}M').count() - 1))
-                .values
-            )
-            col_name = f'Ratio_surface_{i}_mois'
-            df[col_name] = (
-                df.groupby(['Player', 'Surface'])['Win']
-                .apply(lambda x: x.rolling(f'{i}M').sum().shift().fillna(0) / (x.rolling(f'{i}M').count() - 1))
-                .values
-            )
-            col_name = f'Ratio_tournois_{i}_mois'
-            df[col_name] = (
-                df.groupby(['Player', 'Tournament'])['Win']
-                .apply(lambda x: x.rolling(f'{i}M').sum().shift().fillna(0) / (x.rolling(f'{i}M').count() - 1))
-                .values
-            )
-            col_name = f'Ratio_tours_{i}_mois'
-            df[col_name] = (
-                df.groupby(['Player', 'Round'])['Win']
-                .apply(lambda x: x.rolling(f'{i}M').sum().shift().fillna(0) / (x.rolling(f'{i}M').count() - 1))
-                .values
-            )
-    
-        return df
+   # Effectuez le traitement sur les données
+new_df = mean_rolling(data, 6, 18)
+new_df = new_df.sort_values(by=["Year"], ascending=True).reset_index(drop=True)
+new_df["Year"] = pd.to_datetime(new_df["Year"])
+new_df["Year"] = new_df["Year"].dt.date
 
-    
+# Affichez le dataframe dans Streamlit
+st.write(new_df)

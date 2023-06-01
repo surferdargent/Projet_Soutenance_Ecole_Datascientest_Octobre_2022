@@ -97,7 +97,7 @@ new_df = new_df_strategie.copy()
 # @st.cache_data()
 def mean_rolling(df,x,y):
 
-    new_df = df
+    new_df = df.copy()
 # Moyenne roulante des victoires par joueur sur x et y mois en fonction des victoires totales, de la surface, du tournois et des tours 
 
     # new_df['Year'] = pd.to_datetime(new_df['Year'])
