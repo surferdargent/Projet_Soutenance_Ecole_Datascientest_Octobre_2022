@@ -236,6 +236,7 @@ def run():
     # Exécution des modèles
     # @st.cache(suppress_st_warning=True,allow_output_mutation=True)
     # @st.cache_data()
+    
     def train_model():
 
         models = []
@@ -280,7 +281,7 @@ def run():
     """)
 
     st.markdown(""":tennis: 2ème entraînement """)
-
+    @st.cache_data()
     def split1(data):
         df = pd.DataFrame(data)
         df = data.sort_values(by=["Year"],ascending = True)
