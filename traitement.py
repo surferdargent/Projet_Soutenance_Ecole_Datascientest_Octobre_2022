@@ -33,7 +33,7 @@ def load_data():
     data["Date"] = pd.to_datetime(data["Date"])
     data['Date'] = data['Date'].dt.date
     return data
-data = load_data()
+
 
 @st.cache_data()
 def predict(df):
@@ -77,17 +77,24 @@ def predict(df):
     new_df = new_df.drop('Predict_W_Bkm',axis = 1, errors='ignore')
     return new_df
 
+# Chargement des données
+data = load_data()
 
-
+# Prédictions
 new_df = predict(data)
+
+# Transformation de la date
 new_df['Year'] = pd.to_datetime(new_df['Year'])
+
+# Tri des données
 new_df_strategie = new_df.sort_values(by=["Year"],ascending = True)
-# new_df = new_df_strategie.drop('Predict_W_Bkm',axis = 1)
 new_df = new_df_strategie.copy()
 
 
+
+
 # Moyenne roulante stat joueurs
-@st.cache_data()
+# @st.cache_data()
 def mean_rolling(df,x,y):
 
     new_df = df
@@ -121,6 +128,7 @@ players_choice = st.selectbox('Sélectionner un joueur:', players)
 years = new_df["Year"].loc[new_df["Player"] == players_choice]
 year_choice = st.selectbox('Sélectionner une date', years) 
 st.write('Resultat de la recherche:',new_df.loc[(new_df["Player"] == players_choice)&(new_df["Year"] == year_choice)])
+
 st.title("Préprocessing et Modélisation")
 st.markdown(
   """
