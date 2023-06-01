@@ -254,7 +254,7 @@ def run():
             st.write(msg)
         fig = plt.figure()
         plt.bar(names, accuracies)
-        plt.show()
+        plt.close(fig)
         return fig
 
 

@@ -8,7 +8,7 @@ Created on Sun Oct 16 16:16:13 2022
 # -*- coding: utf-8 -*-
 
 
-import datetime
+
 import streamlit as st
 import pandas as pd 
 import numpy as np 
@@ -26,18 +26,30 @@ from sklearn.neighbors import KNeighborsClassifier
 sns.set_theme()  
 
 
+# download data set
+# https://drive.google.com/file/d/1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV/view?usp=share_link
 
-@st.cache_data()
+# def load_models():
+#     rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV")
+#     grid_rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb&confirm=t")
+# #gdown "https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb"
+#     return rf_load_sav,grid_rf_load_sav
+
+# rf_load_sav,grid_rf_load_sav = load_models()
+
+
+
 def load_data():
     data = pd.read_csv('atp_data.csv',parse_dates=['Date'])
     data["Date"] = pd.to_datetime(data["Date"])
     data['Date'] = data['Date'].dt.date
     return data
+data = load_data()
 
 
-@st.cache_data()
 def predict(df):
-    data = df.copy()
+    data = pd.DataFrame()
+    data = df
     data = data.dropna()
 
     # Synthèse des prévisions des bookmakers dans un dataframe 
@@ -46,7 +58,7 @@ def predict(df):
 
     # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
     data['Victoire_reel'] = "V"
-    data['Predict_bkm'] = data['Bkm_prediction'] 
+    data['Predict_bkm'] = data[['Bkm_prediction']] 
     data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
 
     # Le pourcentage de bonnes prédictions
@@ -70,34 +82,23 @@ def predict(df):
     winners.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface','Round', 'Rank', 'SetsWon', 'EloPoints', 'B365','RankDiff','Predict_W_Bkm']
     winners['Win'] = 1
     losers = pd.DataFrame(data = [data.Loser, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.LRank, data.Lsets, data.elo_loser,data.B365L, data.RankDiff, data["Bkm_predict_vict"]]).T
-    losers.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface',     'Round', 'Rank', 'SetsWon', 'EloPoints','B365', 'RankDiff','Predict_W_Bkm']
+    losers.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface', 
+    'Round', 'Rank', 'SetsWon', 'EloPoints','B365', 'RankDiff','Predict_W_Bkm']
     losers['Win'] = 0
     new_df = pd.concat([winners, losers], axis = 0)
-    new_df['Year'] = pd.to_datetime(new_df['Year']).dt.date
-    new_df = new_df.drop('Predict_W_Bkm',axis = 1, errors='ignore')
     return new_df
 
-# Chargement des données
-data = load_data()
-
-# Prédictions
 new_df = predict(data)
-
-# Transformation de la date
 new_df['Year'] = pd.to_datetime(new_df['Year'])
-
-# Tri des données
 new_df_strategie = new_df.sort_values(by=["Year"],ascending = True)
-new_df = new_df_strategie.copy()
-
-
+new_df = new_df_strategie.drop('Predict_W_Bkm',axis = 1)
+print(new_df)
 
 
 # Moyenne roulante stat joueurs
-# @st.cache_data()
 def mean_rolling(df,x,y):
 
-    new_df = df.copy()
+    new_df = df
 # Moyenne roulante des victoires par joueur sur x et y mois en fonction des victoires totales, de la surface, du tournois et des tours 
 
     # new_df['Year'] = pd.to_datetime(new_df['Year'])
@@ -128,7 +129,6 @@ players_choice = st.selectbox('Sélectionner un joueur:', players)
 years = new_df["Year"].loc[new_df["Player"] == players_choice]
 year_choice = st.selectbox('Sélectionner une date', years) 
 st.write('Resultat de la recherche:',new_df.loc[(new_df["Player"] == players_choice)&(new_df["Year"] == year_choice)])
-
 st.title("Préprocessing et Modélisation")
 st.markdown(
   """
@@ -261,40 +261,40 @@ from sklearn.ensemble import RandomForestClassifier
 
 # Trier les dates du dataset 
 new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
-
+# @st.cache(suppress_st_warning=True)
+# @st.cache(allow_output_mutation=True)
 def split(data):
     df = pd.DataFrame(data)
-    df = df.sort_values(by=["Year"], ascending=True)
-
+    df = data.sort_values(by=["Year"],ascending = True)
+    
     # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
     date_split = pd.Timestamp(2016, 1, 1)
-
-    data_train = df[df['Year'] < date_split.date()]
-    data_test =  df[df['Year'] >= date_split.date()]
-
-
-    # Création des quatre variables pour l'entrainement et le test (X_train, X_test, y_train, y_test)
+    data_train = df[df['Year'] < date_split]
+    data_test =  df[df['Year'] >= date_split]
+    
+    # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
     X_train = data_train.drop(['Win'], axis=1)
-    X_test = data_test.drop(['Win'], axis=1)
-
+    X_test =  data_test.drop(['Win'], axis=1)
+    
     y_train = data_train['Win']
-    y_test = data_test['Win']
-
-    # On ne garde que les variables numériques
+    y_test =  data_test['Win']
+    
+    
     X_train = X_train.select_dtypes('float')
     X_test = X_test.select_dtypes('float')
-
-    # Normalisation des données numériques
+    
+    
+    # On normalise nos données numériques :
     scaler = StandardScaler()
-    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
-    X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
-
+    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns = X_train.columns)
+    X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
+    
+    
     X_train = X_train_scaled
     X_test = X_test_scaled
-
-    return X_train, y_train, X_test, y_test
-
-
+    
+    #y_test = y_test.reset_index(drop=True)
+    return X_train,y_train,X_test,y_test
 st.markdown("""Nous pouvons passer à la modélisation.""")
 st.markdown("---")
 st.markdown(
@@ -302,22 +302,17 @@ st.markdown(
   ## Modélisation
 """
 )
-
+ 
 st.markdown(""":tennis: 1er entraînement""")
 
-X_train, y_train, X_test, y_test = split(new_df_preprocessing)
+X_train,y_train,X_test,y_test = split(new_df_preprocessing) 
 
-new_y_test = pd.Series(y_test, index=None)
-
-
+new_y_test = pd.Series(y_test,index=None)
 
 # Définition du modèle
 # Exécution des modèles
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
-import matplotlib.pyplot as plt
-import seaborn as sns
-@st.cache_data()
 def train_model():
     
      models = []
@@ -336,7 +331,7 @@ def train_model():
          st.write(msg)
      fig = plt.figure()
      plt.bar(names, accuracies)
-     plt.show()
+     plt.close(fig)
      return fig
          
 
@@ -349,11 +344,10 @@ Les performances de nos modèles laissent penser qu’il y a sans doute un surap
 Pour ce faire, nous avons établi une *matrice de  corrélation* :
 """
 )
-cor = new_df_preprocessing.corr(numeric_only=True)
+cor = new_df_preprocessing.corr()
 fig, ax = plt.subplots(figsize=(12,10))
-sns.heatmap(cor, ax=ax, cmap='coolwarm')
+sns.heatmap(cor,ax=ax, cmap='coolwarm');
 st.write(fig)
-
  
 st.markdown("""
   Nous constatons que la variable "SetsWon" est fortement corrélée avec "Win" ce qui est normal car elle donne une indication sur le nombre de sets gagnés sur le match.
@@ -372,14 +366,12 @@ st.markdown("""
   Ces résultats semblent plus conformes à ce que l’on peut attendre pour ce type de données.  
   Le meilleur modèle est RF avec un score de 0.88, ce qui est meilleur que les prédictions des bookmakers. 
   Nous allons maintenant tenter d’améliorer les performances du modèle. 
-  """) 
-
+  """)
  
   
 # Fonction split et normalisation des données
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
-@st.cache_data()
 def split_normalisation(data,option):
     
   df = pd.DataFrame(data)
@@ -390,10 +382,8 @@ def split_normalisation(data,option):
 
 # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
   date_split = pd.Timestamp(2016, 1, 1)
-
-  data_train = df[df['Year'] < date_split.date()]
-  data_test =  df[df['Year'] >= date_split.date()]
-
+  data_train = df[df['Year'] < date_split]
+  data_test =  df[df['Year'] >= date_split]
 
 # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
   X_train = data_train.drop(['Win'], axis=1)
@@ -406,7 +396,7 @@ def split_normalisation(data,option):
   X_test = X_test.select_dtypes('float')
 
 
-# On normalise nos données numériques   :
+# On normalise nos données numériques :
   scaler = StandardScaler()
   X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns = X_train.columns)
   X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
@@ -432,9 +422,8 @@ def split_normalisation(data,option):
         df = pd.DataFrame(list(zip(names,accuracies)), columns=['Noms', f"Scores {x}"])
       
   return df
-
-@st.cache_data()
-def importance_variables(X_train, y_train):
+ 
+def importance_variables():
     RandomForestClassifier(random_state=123).fit(X_train,y_train)
     fig1 = plt.figure(figsize=(14,6))
     train_features = X_train
@@ -449,11 +438,8 @@ def importance_variables(X_train, y_train):
     plt.show()
     st.write("""Ci dessous l'importance des variables nous donne des indications sur le poids de chaque variable sur notre modèle.
     """)  
-    return fig1
-
-fig1 = importance_variables(X_train, y_train)
-st.pyplot(fig1)
-
+    return st.pyplot(fig1)
+importance_variables()
 st.markdown("""
   :tennis: Amélioration du modèle RF
  
@@ -513,7 +499,7 @@ df3 = df3["Scores 3"]
 df4 = df4["Scores 4"]
 df5 = df5["Scores 5"]
 df6=df6["Noms"]
-@st.cache_resource()
+@st.cache_data
 def creat_df():
     
     data1 =  pd.concat([df6,df1],axis=1)
