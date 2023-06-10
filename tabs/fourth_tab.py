@@ -214,3 +214,6 @@ def run():
         bookmakers.
     """
     )
+
+if __name__ == "__main__":
+    run()

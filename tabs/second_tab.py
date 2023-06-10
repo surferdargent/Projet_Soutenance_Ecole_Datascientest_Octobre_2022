@@ -217,7 +217,8 @@ def run():
     st.write('Resultat de la recherche:',new_df.loc[(new_df["Player"] == players_choice)&(new_df["Year"] == year_choice)])
       
 
-    
+if __name__ == "__main__":
+    run()
     
     
    

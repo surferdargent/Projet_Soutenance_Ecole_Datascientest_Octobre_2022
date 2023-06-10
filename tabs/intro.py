@@ -25,3 +25,5 @@ def run():
         - De battre les algorithmes des bookmakers sur l’estimation de la probabilité d’un joueur de gagner un match
         - De dégager une stratégie de paris
         Le jeu de données utilisé est sur [kaggle](https://www.kaggle.com/edouardthomas/atp-matches-dataset) il représente tous les matchs de tennis entre 2000 et 2018.""")
+if __name__ == "__main__":
+    run()

@@ -15,8 +15,6 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import seaborn as sns
 import io   
-# import pickle
-# import wget
 from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV 
 from sklearn.linear_model import LogisticRegression 
@@ -25,17 +23,6 @@ from datetime import datetime
 from sklearn.neighbors import KNeighborsClassifier
 sns.set_theme()  
 
-
-# download data set
-# https://drive.google.com/file/d/1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV/view?usp=share_link
-
-# def load_models():
-#     rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV")
-#     grid_rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb&confirm=t")
-# #gdown "https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb"
-#     return rf_load_sav,grid_rf_load_sav
-
-# rf_load_sav,grid_rf_load_sav = load_models()
 
 
 
@@ -314,25 +301,28 @@ new_y_test = pd.Series(y_test,index=None)
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
 def train_model():
-    
-     models = []
-     models.append(('Logistic Regression',LogisticRegression(random_state=123)))
-     models.append(('KNeighbors', KNeighborsClassifier()))
-     models.append(('Random Forest', RandomForestClassifier(random_state=123)))
-     accuracies = []
-     names = []
+    models = []
+    models.append(('Logistic Regression', LogisticRegression(random_state=123)))
+    models.append(('KNeighbors', KNeighborsClassifier()))
+    models.append(('Random Forest', RandomForestClassifier(random_state=123)))
+    accuracies = []
+    names = []
      
-     for name, model in models:
-         model.fit(X_train,y_train)
-         accuracy = model.score(X_test,y_test)
-         accuracies.append(accuracy)
-         names.append(name)
-         msg = "Résultat pour %s: %f" % (name, accuracy)
-         st.write(msg)
-     fig = plt.figure()
-     plt.bar(names, accuracies)
-     plt.close(fig)
-     return fig
+    for name, model in models:
+        model.fit(X_train, y_train)
+        accuracy = model.score(X_test, y_test)
+        accuracies.append(accuracy)
+        names.append(name)
+        msg = "Résultat pour %s: %f" % (name, accuracy)
+        st.write(msg)
+    
+    fig, ax = plt.subplots()
+    ax.bar(names, accuracies)
+    ax.set_xlabel("Modèle")
+    ax.set_ylabel("Précision")
+    ax.set_title("Précision des modèles")
+    plt.close(fig)
+    return fig
          
 
 st.pyplot(train_model())

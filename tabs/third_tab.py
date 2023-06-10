@@ -93,17 +93,6 @@ def run():
         """
     )
 
-    # """ @st.cache(suppress_st_warning=True,allow_output_mutation=True)
-    # def load_models():
-    #     rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV")
-    #     grid_rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb&confirm=t")
-    # #gdown "https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb"
-    #     return rf_load_sav,grid_rf_load_sav
-    #  """
-    # rf_load_sav,grid_rf_load_sav = load_models()
-    # Encodage des variables
-    # Certaines variables sont catégorielles il faut les passer en numérique
-
     # Player
     Id_player= pd.DataFrame(new_df_preprocessing['Player'].unique(), columns=['Name'])
     Id_player = Id_player.rename_axis('Id_player').reset_index()
@@ -238,23 +227,26 @@ def run():
     # @st.cache_data()
     
     def train_model():
-
         models = []
-        models.append(('Logistic Regression',LogisticRegression(random_state=123)))
+        models.append(('Logistic Regression', LogisticRegression(random_state=123)))
         models.append(('KNeighbors', KNeighborsClassifier()))
         models.append(('Random Forest', RandomForestClassifier(random_state=123)))
         accuracies = []
         names = []
-
+         
         for name, model in models:
-            model.fit(X_train,y_train)
-            accuracy = model.score(X_test,y_test)
+            model.fit(X_train, y_train)
+            accuracy = model.score(X_test, y_test)
             accuracies.append(accuracy)
             names.append(name)
             msg = "Résultat pour %s: %f" % (name, accuracy)
             st.write(msg)
-        fig = plt.figure()
-        plt.bar(names, accuracies)
+        
+        fig, ax = plt.subplots()
+        ax.bar(names, accuracies)
+        ax.set_xlabel("Modèle")
+        ax.set_ylabel("Précision")
+        ax.set_title("Précision des modèles")
         plt.close(fig)
         return fig
 
@@ -379,21 +371,7 @@ def run():
 
       return df
 
-    # @st.cache(suppress_st_warning=True)
-    # def importance_variables():
-    #      fig1 = plt.figure(figsize=(14,6))
-    #      train_features = X_train
-    #      rf_loaded = pickle.load(open('.\models\Random Forest.sav', 'rb'))
-    #      vars_imp = pd.Series(rf_loaded.feature_importances_,index=train_features.columns).sort_values(ascending=False)
-    #      sns.barplot(x=vars_imp.index,y=vars_imp)
-    #      plt.xticks(rotation=90)
-    #      plt.xlabel('Variables')
-    #      plt.ylabel("Scores d'importance de la variable")
-
-    #      plt.show()
-    #      st.write("""Ci dessous l'importance des variables nous donne des indications sur le poids de chaque variable sur notre modèle.
-    #      """)
-    #      return st.pyplot(fig1)
+  
     importance_variables()
 
     st.markdown("""
@@ -557,7 +535,8 @@ def run():
 
 
 
-
+if __name__ == "__main__":
+    run()
 
 
 
