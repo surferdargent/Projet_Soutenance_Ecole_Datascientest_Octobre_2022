@@ -572,6 +572,7 @@ def optimisation_models():
         #pickle.dump( y_pred_rf,f)
     
     rap_classif = 'Rapport de classification:\n ' + classification_report(y_test, y_pred_rf)
+    print(len(y_pred_rf))
     return   y_pred_rf,grid_rf,best_param,score_rf,rap_classif
 
 y_pred_rf,grid_rf,best_param,score_rf,rap_classif = optimisation_models()

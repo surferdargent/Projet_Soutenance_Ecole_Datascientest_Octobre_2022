@@ -2,22 +2,25 @@ import streamlit as st
 import pandas as pd 
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-
-import io
-
-import pickle
-
-#from traitement import y_test,X_test,y_train,split_normalisation,mean_rolling,creat_df
-
+import streamlit as st
+import pandas as pd 
+import seaborn as sns
+import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report
 from sklearn.linear_model import LogisticRegression 
-
-
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
+import io
+import pickle
+from sklearn.metrics import classification_report
+from sklearn.linear_model import LogisticRegression 
+from sklearn.neighbors import KNeighborsClassifier
+from tabs.second_tab import data_processor
 
-
-
+# utiliser la variable processed_data comme ceci:
 
 
 title = "Préprocessing et Modélisation"
@@ -46,8 +49,8 @@ def run():
         
         """
     )
-
-    new_df_preprocessing = pd.read_csv('df_variables_enrichies.csv',parse_dates=['Year'])
+    new_df_preprocessing = data_processor.processed_data
+    # new_df_preprocessing = pd.read_csv('df_variables_enrichies.csv',parse_dates=['Year'])
     new_df_preprocessing['Year'] = pd.to_datetime(new_df_preprocessing['Year'])
     new_df_preprocessing['Year'] = new_df_preprocessing['Year'].dt.date
     # Affichage info df df
@@ -226,29 +229,56 @@ def run():
 
     # Exécution des modèles
     @st.cache_data()
-    def train_model():
+    # def train_model():
        
+    #     models = []
+    #     models.append(('Logistic Regression',LogisticRegression(random_state=123)))
+    #     models.append(('KNeighbors', KNeighborsClassifier()))
+    #     models.append(('Random Forest', RandomForestClassifier(random_state=123)))
+    #     accuracies = []
+    #     names = []
+        
+    #     for name, model in models:
+    #         model.fit(X_train,y_train)
+    #         accuracy = model.score(X_test,y_test)
+    #         accuracies.append(accuracy)
+    #         names.append(name)
+    #         msg = "Résultat pour %s: %f" % (name, accuracy)
+    #         st.write(msg)
+    #     fig = plt.figure()
+    #     sns.barplot(x=names, y=accuracies)
+
+    #     plt.show()
+    #     st.pyplot(fig)      
+
+    # train_model()
+    
+    def train_model():
         models = []
         models.append(('Logistic Regression',LogisticRegression(random_state=123)))
         models.append(('KNeighbors', KNeighborsClassifier()))
         models.append(('Random Forest', RandomForestClassifier(random_state=123)))
         accuracies = []
         names = []
-        
+        trained_models = {}  # Dictionnaire pour stocker les modèles formés
+    
         for name, model in models:
             model.fit(X_train,y_train)
             accuracy = model.score(X_test,y_test)
             accuracies.append(accuracy)
             names.append(name)
+            trained_models[name] = model  # Stocker le modèle formé
             msg = "Résultat pour %s: %f" % (name, accuracy)
             st.write(msg)
+    
         fig = plt.figure()
         sns.barplot(x=names, y=accuracies)
-
         plt.show()
-        st.pyplot(fig)      
+        st.pyplot(fig)  
+    
+        return trained_models  # Retourner le dictionnaire des modèles formés
 
-    train_model()
+    trained_models = train_model()
     
     st.markdown(
    """
@@ -471,32 +501,50 @@ def run():
 
 
     @st.cache_data()
-    def optimisation_models():
-        grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
-        # Optimisation du modèle
-        # rf = RandomForestClassifier(random_state=123) 
-        # param_grid_rf = [{ 'n_estimators' : [1000] ,
-        # 'min_samples_leaf' :  [1 ] ,
-        # 'max_features' :  ['sqrt'  ]}] 
-        # param_grid_rf = [{ 'n_estimators' : [ 10 , 50 , 100 , 250 , 500 , 1000 ],
-        # 'min_samples_leaf' : [ 1 , 3 , 5 ],
-        # 'max_features' : [ 'sqrt' , 'log2' ]}] 
-        # grid_rf = GridSearchCV(estimator=rf_loaded, param_grid=param_grid_rf)
-        # Entraînement du modèle
-        # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
-        grid_rf.fit(X_train, y_train)
-        # with open('.\models\Grid_Random Forest.sav','wb') as f:
-        #     pickle.dump( grid_rf,f)
-        st.write("Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_))
-        st.write("Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test)))
-        # Prédiction du modèle
-        #y_pred_rf = pickle.load(open('.\models\y_pred_rf_sauv.csv', 'rb'))
-        y_pred_rf = grid_rf.predict(X_test) 
-        #with open('.\models\y_pred_rf_sauv.csv','wb') as f:
-            #pickle.dump( y_pred_rf,f)
+    # def optimisation_models():
+    #     grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
+    #     # Optimisation du modèle
+    #     # rf = RandomForestClassifier(random_state=123) 
+    #     # param_grid_rf = [{ 'n_estimators' : [1000] ,
+    #     # 'min_samples_leaf' :  [1 ] ,
+    #     # 'max_features' :  ['sqrt'  ]}] 
+    #     # param_grid_rf = [{ 'n_estimators' : [ 10 , 50 , 100 , 250 , 500 , 1000 ],
+    #     # 'min_samples_leaf' : [ 1 , 3 , 5 ],
+    #     # 'max_features' : [ 'sqrt' , 'log2' ]}] 
+    #     # grid_rf = GridSearchCV(estimator=rf_loaded, param_grid=param_grid_rf)
+    #     # Entraînement du modèle
+    #     # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
+    #     grid_rf.fit(X_train, y_train)
+    #     # with open('.\models\Grid_Random Forest.sav','wb') as f:
+    #     #     pickle.dump( grid_rf,f)
+    #     st.write("Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_))
+    #     st.write("Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test)))
+    #     # Prédiction du modèle
+    #     #y_pred_rf = pickle.load(open('.\models\y_pred_rf_sauv.csv', 'rb'))
+    #     y_pred_rf = grid_rf.predict(X_test) 
+    #     print(len(y_pred_rf))
+    #     #with open('.\models\y_pred_rf_sauv.csv','wb') as f:
+    #         #pickle.dump( y_pred_rf,f)
         
-        st.text('Rapport de classification:\n ' + classification_report(y_test, y_pred_rf))
-        return   y_pred_rf,grid_rf
+    #     st.text('Rapport de classification:\n ' + classification_report(y_test, y_pred_rf))
+    #     return   y_pred_rf,grid_rf
+    
+    def optimisation_models():
+            param_grid = {
+                'n_estimators': [200, 500],
+                'max_features': ['auto', 'sqrt', 'log2'],
+                'max_depth' : [4,5,6,7,8],
+                'criterion' :['gini', 'entropy']
+            }
+            grid_rf = GridSearchCV(estimator=RandomForestClassifier(random_state=123), param_grid=param_grid, cv= 5)
+            grid_rf.fit(X_train, y_train)
+            trained_models['Grid_Random Forest'] = grid_rf  # Stocker le modèle formé dans le dictionnaire
+            st.write("Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_))
+            st.write("Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test)))
+            y_pred_rf = grid_rf.predict(X_test) 
+            st.text('Rapport de classification:\n ' + classification_report(y_test, y_pred_rf))
+            return y_pred_rf, grid_rf
+
 
     if st.button('Hyperparamètres'):
             optimisation_models() 
