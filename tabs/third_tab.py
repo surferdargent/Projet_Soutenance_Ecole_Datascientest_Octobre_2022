@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd 
-
-import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
+
 
 import io
 
@@ -169,7 +169,7 @@ def run():
     # Trier les dates du dataset 
     new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
     # @st.cache(suppress_st_warning=True)
-    @st.cache_data()
+    @st.cache(allow_output_mutation=True)
     def split(data):
         df = pd.DataFrame(data)
         df = data.sort_values(by=["Year"],ascending = True)
@@ -225,7 +225,7 @@ def run():
 
 
     # Exécution des modèles
-    @st.cache_data()
+    @st.cache(suppress_st_warning=True)
     def train_model():
        
         models = []
@@ -243,7 +243,12 @@ def run():
             msg = "Résultat pour %s: %f" % (name, accuracy)
             st.write(msg)
         fig = plt.figure()
-        sns.barplot(names, accuracies)
+        try:
+            sns.barplot(x=names, y=accuracies)
+        except Exception as e:
+            st.error(f"Une erreur s'est produite lors de l'affichage du graphique : {str(e)}")
+
+
         plt.show()
         st.pyplot(fig)      
 
@@ -284,7 +289,7 @@ def run():
 
     # Fonction split et normalisation des données
     
-    @st.cache_data()
+    @st.cache(suppress_st_warning=True)
     def split_normalisation(data,option):
         
       df = pd.DataFrame(data)
@@ -412,7 +417,7 @@ def run():
     df6=df6["Noms"]
     
     
-    @st.cache_data()
+    @st.cache(suppress_st_warning=True)
     def creat_df():
          
          data1 =  pd.concat([df6,df1],axis=1)
@@ -469,7 +474,8 @@ def run():
 
 
 
-    @st.cache_data()
+    @st.cache(allow_output_mutation=True)
+    @st.cache(suppress_st_warning=True)
     def optimisation_models():
         grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
         # Optimisation du modèle
