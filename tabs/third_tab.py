@@ -169,7 +169,7 @@ def run():
     # Trier les dates du dataset 
     new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = True)
     # @st.cache(suppress_st_warning=True)
-    @st.cache(allow_output_mutation=True)
+    @st.cache_data()
     def split(data):
         df = pd.DataFrame(data)
         df = data.sort_values(by=["Year"],ascending = True)
@@ -225,7 +225,7 @@ def run():
 
 
     # Exécution des modèles
-    @st.cache(suppress_st_warning=True)
+    @st.cache_data()
     def train_model():
        
         models = []
@@ -243,11 +243,7 @@ def run():
             msg = "Résultat pour %s: %f" % (name, accuracy)
             st.write(msg)
         fig = plt.figure()
-        try:
-            sns.barplot(x=names, y=accuracies)
-        except Exception as e:
-            st.error(f"Une erreur s'est produite lors de l'affichage du graphique : {str(e)}")
-
+        sns.barplot(x=names, y=accuracies)
 
         plt.show()
         st.pyplot(fig)      
@@ -289,7 +285,7 @@ def run():
 
     # Fonction split et normalisation des données
     
-    @st.cache(suppress_st_warning=True)
+    @st.cache_data()
     def split_normalisation(data,option):
         
       df = pd.DataFrame(data)
@@ -417,7 +413,7 @@ def run():
     df6=df6["Noms"]
     
     
-    @st.cache(suppress_st_warning=True)
+    @st.cache_data()
     def creat_df():
          
          data1 =  pd.concat([df6,df1],axis=1)
@@ -474,8 +470,7 @@ def run():
 
 
 
-    @st.cache(allow_output_mutation=True)
-    @st.cache(suppress_st_warning=True)
+    @st.cache_data()
     def optimisation_models():
         grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
         # Optimisation du modèle
