@@ -3,9 +3,9 @@ numpy
 pandas
 Pillow
 scipy
-streamlit==1.21.0
-scikit-learn
+streamlit
+sklearn
 geopandas
 geoplot
 seaborn
-
+OrderedDict
