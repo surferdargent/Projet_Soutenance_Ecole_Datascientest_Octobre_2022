@@ -499,7 +499,7 @@ df3 = df3["Scores 3"]
 df4 = df4["Scores 4"]
 df5 = df5["Scores 5"]
 df6=df6["Noms"]
-@st.cache(allow_output_mutation=True)
+@st.cache_data()
 def creat_df():
     
     data1 =  pd.concat([df6,df1],axis=1)
