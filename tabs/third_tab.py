@@ -50,6 +50,13 @@ def run():
         """
     )
     new_df_preprocessing = data_processor.processed_data
+    
+
+    # new_df_preprocessing = pd.DataFrame()  # Initialisez new_df_preprocessing avec un DataFrame vide ou vos données réelles
+
+    if new_df_preprocessing is not None:
+            new_df_preprocessing['Year'] = pd.to_datetime(new_df_preprocessing['Year'])
+
     # new_df_preprocessing = pd.read_csv('df_variables_enrichies.csv',parse_dates=['Year'])
     new_df_preprocessing['Year'] = pd.to_datetime(new_df_preprocessing['Year'])
     new_df_preprocessing['Year'] = new_df_preprocessing['Year']
