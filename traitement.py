@@ -260,8 +260,11 @@ def split(data):
     date_split = pd.Timestamp(2016, 1, 1)
     
     df['Year'] = pd.to_datetime(df['Year'])
-    data_train = df[df['Year'] < date_split]
-    data_test = df[df['Year'] >= date_split]
+    data_train = df[df['Year'] < pd.Timestamp(date_split)]
+    
+    # data_train = df[df['Year'] < date_split]
+    data_test = df[df['Year'] >= pd.Timestamp(date_split)]
+    # data_test =  df[df['Year'] >= date_split]
     
     # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
     X_train = data_train.drop(['Win'], axis=1)
@@ -335,7 +338,7 @@ Les performances de nos modèles laissent penser qu’il y a sans doute un surap
 Pour ce faire, nous avons établi une *matrice de  corrélation* :
 """
 )
-cor = new_df_preprocessing.corr()
+cor = new_df_preprocessing.select_dtypes(['int64', 'float64']).corr()
 fig, ax = plt.subplots(figsize=(12,10))
 sns.heatmap(cor,ax=ax, cmap='coolwarm');
 st.write(fig)
@@ -373,10 +376,9 @@ def split_normalisation(data,option):
 
 # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
   date_split = pd.Timestamp(2016, 1, 1)
-    
-  df['Year'] = pd.to_datetime(df['Year'])
   data_train = df[df['Year'] < date_split]
-  data_test = df[df['Year'] >= date_split]
+  data_test =  df[df['Year'] >= date_split]
+
 # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
   X_train = data_train.drop(['Win'], axis=1)
   X_test =  data_test.drop(['Win'], axis=1)
