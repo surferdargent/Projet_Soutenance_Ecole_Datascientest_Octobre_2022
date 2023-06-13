@@ -26,17 +26,6 @@ from sklearn.neighbors import KNeighborsClassifier
 sns.set_theme()  
 
 
-# download data set
-# https://drive.google.com/file/d/1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV/view?usp=share_link
-
-# def load_models():
-#     rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1Xoa9uHixfbqgoaKeA_C63FRGUxGnrLVV")
-#     grid_rf_load_sav = wget.download("https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb&confirm=t")
-# #gdown "https://drive.google.com/uc?export=download&id=1_f5BLcI9If5LFXl-e1hXShJ2v5xHpdtb"
-#     return rf_load_sav,grid_rf_load_sav
-
-# rf_load_sav,grid_rf_load_sav = load_models()
-
 
 
 def load_data():

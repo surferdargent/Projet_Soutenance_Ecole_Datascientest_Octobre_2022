@@ -4,8 +4,8 @@ pandas
 Pillow
 scipy
 streamlit
-sklearn
 geopandas
 geoplot
 seaborn
 OrderedDict
+scikit-learn
