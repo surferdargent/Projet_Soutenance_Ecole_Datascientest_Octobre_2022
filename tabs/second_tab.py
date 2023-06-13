@@ -118,7 +118,6 @@ class DataProcessor:
     
         # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
         data.loc[:, 'Victoire_reel'] = "V"
-        #data[['Bkm_prediction','Victoire_reel','Winner']]
         data.loc[:, 'Predict_bkm'] = data['Bkm_prediction']
         data.loc[:, 'Bkm_predict_vict'] = data['Predict_bkm'].replace({"D": 0, "V": 1}).astype(float)
         

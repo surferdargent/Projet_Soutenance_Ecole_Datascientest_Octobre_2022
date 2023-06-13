@@ -47,12 +47,12 @@ def predict(df):
     data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1], value=['V', 'D'])
 
     # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
-    data['Victoire_reel'] = "V"
-    data['Predict_bkm'] = data[['Bkm_prediction']] 
-    data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
+    data.loc[:, 'Victoire_reel'] = "V"
+    data.loc[:, 'Predict_bkm'] = data['Bkm_prediction']
+    data.loc[:, 'Bkm_predict_vict'] = data['Predict_bkm'].replace({"D": 0, "V": 1}).astype(float)
 
     # Le pourcentage de bonnes prédictions
-    data['Bkm_prediction'] = data['Victoire_reel']==data['Bkm_prediction']
+    data.loc[:, 'Bkm_prediction'] = data['Victoire_reel'] == data['Bkm_prediction']
     label = data['Bkm_prediction'].value_counts().index
     fig = plt.figure(figsize=(2,2))
     plt.pie(x=data['Bkm_prediction'].value_counts().values, 
