@@ -226,6 +226,10 @@ class DataProcessor:
 # Créer une instance globale de DataProcessor
 data_processor = DataProcessor()  
 
-if __name__ == "__main__":
+    
+def run():
     data_processor.run()
+
+if __name__ == "__main__":
+    run()
   

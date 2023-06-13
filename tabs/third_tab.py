@@ -228,31 +228,7 @@ def run():
 
 
     # Exécution des modèles
-    @st.cache_data()
-    # def train_model():
-       
-    #     models = []
-    #     models.append(('Logistic Regression',LogisticRegression(random_state=123)))
-    #     models.append(('KNeighbors', KNeighborsClassifier()))
-    #     models.append(('Random Forest', RandomForestClassifier(random_state=123)))
-    #     accuracies = []
-    #     names = []
-        
-    #     for name, model in models:
-    #         model.fit(X_train,y_train)
-    #         accuracy = model.score(X_test,y_test)
-    #         accuracies.append(accuracy)
-    #         names.append(name)
-    #         msg = "Résultat pour %s: %f" % (name, accuracy)
-    #         st.write(msg)
-    #     fig = plt.figure()
-    #     sns.barplot(x=names, y=accuracies)
-
-    #     plt.show()
-    #     st.pyplot(fig)      
-
-    # train_model()
-    
+    @st.cache_data()     
     def train_model():
         models = []
         models.append(('Logistic Regression',LogisticRegression(random_state=123)))
@@ -346,32 +322,37 @@ def run():
       X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
       X_train = X_train_scaled
       X_test = X_test_scaled
-      models = []
-      models.append(('Logistic Regression',LogisticRegression(random_state=123)))
-      models.append(('KNeighbors', KNeighborsClassifier()))
-      models.append(('Random Forest', RandomForestClassifier(random_state=123)))
+      models = {
+        "Logistic Regression": LogisticRegression(random_state=123),
+        "KNeighbors": KNeighborsClassifier(),
+        "Random Forest": RandomForestClassifier(random_state=123)
+        }
+    
       accuracies = []
       names = []
       data=[]
+      model_dict = {} # Dictionnaire pour stocker les modèles formés
+
         
-      for name, model in models:
-            model.fit(X_train,y_train)
-            accuracy = model.score(X_test,y_test)
+      for name, model in models.items():
+            model.fit(X_train, y_train)
+            accuracy = model.score(X_test, y_test)
             accuracies.append(accuracy)
             names.append(name)
-            data.append([names,accuracies]) 
-            # with open(f".\models\{name}.sav",'wb') as f:
-            #   pickle.dump(model,f)   
-            df = pd.DataFrame(list(zip(names,accuracies)), columns=['Noms', f"Scores {x}"])
-          
-      return df
+            data.append([names, accuracies]) 
+    
+            model_dict[name] = model # Stocker le modèle dans le dictionnaire
+    
+            df = pd.DataFrame(list(zip(names, accuracies)), columns=['Noms', f"Scores {x}"])
+            
+      return df, model_dict
 
     
-    def importance_variables():
+    def importance_variables(model_dict):
          fig1 = plt.figure(figsize=(14,6))
          train_features = X_train
-         rf_loaded = pickle.load(open('.\models\Random Forest.sav', 'rb'))
-         vars_imp = pd.Series(rf_loaded.feature_importances_,index=train_features.columns).sort_values(ascending=False)
+         rf_model = model_dict["Random Forest"]  # Récupérer le modèle du dictionnaire
+         vars_imp = pd.Series(rf_model.feature_importances_,index=train_features.columns).sort_values(ascending=False)
          sns.barplot(x=vars_imp.index,y=vars_imp)
          plt.xticks(rotation=90)
          plt.xlabel('Variables')
@@ -381,7 +362,13 @@ def run():
          st.write("""Ci dessous l'importance des variables nous donne des indications sur le poids de chaque variable sur notre modèle.
          """)  
          return st.pyplot(fig1)
-    importance_variables()
+     
+    data = new_df_preprocessing_demo
+    option = 1
+    # Utilisation
+    df, model_dict = split_normalisation(data, option)
+  
+    importance_variables(model_dict)
      
     st.markdown("""
     :tennis: Amélioration du modèle RF
@@ -400,7 +387,7 @@ def run():
     #Features d'origine à conserver
     drop_variable1 = ['EloPoints','RankDiff', 'Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' , 'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
     df1 = new_df_preprocessing_demo.drop(drop_variable1,axis=1)
-    df1 = split_normalisation(df1,1)
+    df1, model_dict1 = split_normalisation(df1,1)
 
     
     # "Features d'origine + Points ELO"  à conserver
@@ -408,27 +395,33 @@ def run():
     'Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' ,
     'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
     df2 = new_df_preprocessing_demo.drop(drop_variable2,axis=1)
-    df2 = split_normalisation(df2,2)
+    df2, model_dict1 = split_normalisation(df2,2)
     
 
     #"Features d'origine + Points ELO + Diff. de classement "  à conserver
     drop_variable3 = ['Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' ,
     'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
     df3 = new_df_preprocessing_demo.drop(drop_variable3,axis=1)
-    df3 = split_normalisation(df3,3)
+    df3, model_dict1 = split_normalisation(df3,3)
 
 
     #"Features d'origine + Points ELO + Diff. de classement + Moy.roulantes 6 mois"  à conserver
     drop_variable4 = ['Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
     df4 = new_df_preprocessing_demo.drop(drop_variable4,axis=1)
-    df4 = split_normalisation(df4,4)
+    df4, model_dict1 = split_normalisation(df4,4)
 
 
     #"Features d'origine + Points ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"  à conserver
     df5 = new_df_preprocessing_demo  
-    df5 = split_normalisation(df5,5)
+    df5, model_dict1 = split_normalisation(df5,5)
 
     
+
+
+
+
+
+
     
     # model_choisi = st.selectbox(label = "Choix des Features", options = ["Features d'origine ", "Features d'origine + Pts ELO", "Features d'origine + Pts ELO + Diff. de classement","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"])
     st.markdown("""
@@ -494,47 +487,15 @@ def run():
                 - L'optimisation
                   """)
     
-    #rf_loaded = pickle.load(open('.\models\Random Forest.sav', 'rb'))
-    # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))   
+  
 
 
-
-
-    @st.cache_data()
-    # def optimisation_models():
-    #     grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
-    #     # Optimisation du modèle
-    #     # rf = RandomForestClassifier(random_state=123) 
-    #     # param_grid_rf = [{ 'n_estimators' : [1000] ,
-    #     # 'min_samples_leaf' :  [1 ] ,
-    #     # 'max_features' :  ['sqrt'  ]}] 
-    #     # param_grid_rf = [{ 'n_estimators' : [ 10 , 50 , 100 , 250 , 500 , 1000 ],
-    #     # 'min_samples_leaf' : [ 1 , 3 , 5 ],
-    #     # 'max_features' : [ 'sqrt' , 'log2' ]}] 
-    #     # grid_rf = GridSearchCV(estimator=rf_loaded, param_grid=param_grid_rf)
-    #     # Entraînement du modèle
-    #     # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
-    #     grid_rf.fit(X_train, y_train)
-    #     # with open('.\models\Grid_Random Forest.sav','wb') as f:
-    #     #     pickle.dump( grid_rf,f)
-    #     st.write("Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_))
-    #     st.write("Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test)))
-    #     # Prédiction du modèle
-    #     #y_pred_rf = pickle.load(open('.\models\y_pred_rf_sauv.csv', 'rb'))
-    #     y_pred_rf = grid_rf.predict(X_test) 
-    #     print(len(y_pred_rf))
-    #     #with open('.\models\y_pred_rf_sauv.csv','wb') as f:
-    #         #pickle.dump( y_pred_rf,f)
-        
-    #     st.text('Rapport de classification:\n ' + classification_report(y_test, y_pred_rf))
-    #     return   y_pred_rf,grid_rf
-    
+    @st.cache_data()     
     def optimisation_models():
             param_grid = {
-                'n_estimators': [200, 500],
-                'max_features': ['auto', 'sqrt', 'log2'],
-                'max_depth' : [4,5,6,7,8],
-                'criterion' :['gini', 'entropy']
+                'n_estimators': [1000],
+                'max_features': ['sqrt'],
+                'min_samples_leaf' :  [1 ] 
             }
             grid_rf = GridSearchCV(estimator=RandomForestClassifier(random_state=123), param_grid=param_grid, cv= 5)
             grid_rf.fit(X_train, y_train)
