@@ -117,14 +117,21 @@ class DataProcessor:
     
     
         # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
-        data['Victoire_reel'] = "V"
+        data.loc[:, 'Victoire_reel'] = "V"
         #data[['Bkm_prediction','Victoire_reel','Winner']]
-        data['Predict_bkm'] = data[['Bkm_prediction']] 
-        data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
+        data.loc[:, 'Predict_bkm'] = data['Bkm_prediction']
+        data.loc[:, 'Bkm_predict_vict'] = data['Predict_bkm'].replace({"D": 0, "V": 1}).astype(float)
         
+        
+        
+
+
+
+
+
         
         # Le pourcentage de bonnes prédictions
-        data['Bkm_prediction'] = data['Victoire_reel']==data['Bkm_prediction']
+        data.loc[:, 'Bkm_prediction'] = data['Victoire_reel'] == data['Bkm_prediction']
         
         label = data['Bkm_prediction'].value_counts().index
         
@@ -162,7 +169,7 @@ class DataProcessor:
         
         
         # Diviser ke dataframe en deux en ayant un joueur par ligne en créant une colonne Win en mettant 0 si le joueur est perdant et 1 si il est gagnant 
-        data['RankDiff'] = data.LRank - data.WRank
+        data.loc[:, 'RankDiff'] = data['LRank'] - data['WRank']
     
         winners = pd.DataFrame(data = [data.Winner, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.WRank, data.Wsets, data.elo_winner,data.B365W, data.RankDiff,data["Bkm_predict_vict"]]).T
         
