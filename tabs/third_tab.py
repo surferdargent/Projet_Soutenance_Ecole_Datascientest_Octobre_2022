@@ -3,7 +3,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
-import pandas as pd 
+
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report
@@ -53,7 +53,7 @@ def run():
     # new_df_preprocessing = pd.read_csv('df_variables_enrichies.csv',parse_dates=['Year'])
     new_df_preprocessing['Year'] = pd.to_datetime(new_df_preprocessing['Year'])
     new_df_preprocessing['Year'] = new_df_preprocessing['Year']
-    import pandas as pd
+ 
 
     # Vérifier le type de new_df_preprocessing
     if isinstance(new_df_preprocessing, pd.DataFrame):
