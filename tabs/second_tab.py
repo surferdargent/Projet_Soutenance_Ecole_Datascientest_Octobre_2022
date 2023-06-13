@@ -4,12 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-#from traitement import y_test,X_test,y_train,split_normalisation,mean_rolling,creat_df
-
-
-
-
-
 
 title = "Datavisualisation"
 sidebar_name = "Datavisualisation"

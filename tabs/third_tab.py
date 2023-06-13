@@ -217,18 +217,8 @@ def run():
     
     X_train,y_train,X_test,y_test = split(new_df_preprocessing) 
 
-    
-    
-    
-    
-    # Définition du modèle
-
-
-    
-
-
     # Exécution des modèles
-    @st.cache_data()     
+    # @st.cache_data()     
     def train_model():
         models = []
         models.append(('Logistic Regression',LogisticRegression(random_state=123)))
@@ -347,7 +337,7 @@ def run():
             
       return df, model_dict
 
-    
+    @st.cache_data()
     def importance_variables(model_dict):
          fig1 = plt.figure(figsize=(14,6))
          train_features = X_train
