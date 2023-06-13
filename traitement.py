@@ -43,6 +43,7 @@ def predict(df):
     data = data.dropna()
 
     # Synthèse des prévisions des bookmakers dans un dataframe 
+    data = data.copy()
     data['Bkm_prediction'] = data[['B365W','B365L']].apply(lambda x: np.argmin(x), axis=1)
     data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1], value=['V', 'D'])
 

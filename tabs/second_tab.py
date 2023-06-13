@@ -109,7 +109,7 @@ class DataProcessor:
     
         # Suppression des manquants
         data = data.dropna()
-        
+        data = data.copy()
         # Synthèse des prévisions des bookmakers dans un dataframe 
     
         data['Bkm_prediction'] = data[['B365W','B365L']].apply(lambda x: np.argmin(x), axis=1)
