@@ -258,7 +258,10 @@ def split(data):
     
     # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
     date_split = pd.Timestamp(2016, 1, 1)
-    data_train = df[df['Year'] < date_split]
+    # data_train = df[df['Year'] < date_split]
+    # Si 'Year' est un Timestamp :
+    data_train = df[df['Year'].dt.date < date_split]
+
     data_test =  df[df['Year'] >= date_split]
     
     # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
