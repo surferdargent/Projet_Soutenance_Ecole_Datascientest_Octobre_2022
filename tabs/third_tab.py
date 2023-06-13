@@ -474,7 +474,7 @@ def run():
     data5 =  pd.concat([df6,df1,df2,df3,df4,df5],axis=1)
     selections = ["Features d'origine" , "Features d'origine + Pts ELO", "Features d'origine + Pts ELO + Diff. de classement","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"]
 
-    selection = st.radio("", selections,index= 4)
+    selection = st.radio("Sélectionnez", selections,index= 4)
 
     if selection == selections[0]: 
         st.write(data1)

@@ -517,7 +517,7 @@ data1,data2,data3,data4,data5 = creat_df()
 
 selections = ["Features d'origine" , "Features d'origine + Pts ELO", "Features d'origine + Pts ELO + Diff. de classement","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"]
 
-selection = st.radio("", selections,index=4)
+selection = st.radio("Sélectionnez", selections,index=4)
 
 if selection == selections[0]: 
     st.write(data1)
