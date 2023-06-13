@@ -23,6 +23,7 @@ from sklearn.linear_model import LogisticRegression
 from PIL import Image
 from datetime import datetime 
 from sklearn.neighbors import KNeighborsClassifier
+from tabs.second_tab import data_processor
 sns.set_theme()  
 
 
@@ -110,7 +111,7 @@ new_df["Year"] = pd.to_datetime(new_df["Year"])
 new_df["Year"]= new_df["Year"].dt.date
 
 st.write(new_df)
-new_df.to_csv('df_variables_enrichies.csv',index = False)
+# new_df.to_csv('df_variables_enrichies.csv',index = False)
 new_df["Year"] = pd.to_datetime(new_df["Year"])
 new_df["Year"]= new_df["Year"].dt.date
 players = new_df['Player'].unique()
