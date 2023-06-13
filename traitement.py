@@ -376,7 +376,9 @@ def split_normalisation(data,option):
 
 # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
   date_split = pd.Timestamp(2016, 1, 1)
-  data_train = df[df['Year'].dt.date < date_split]
+  df["Year"] = pd.to_datetime(df["Year"])
+  df["Year"]= df["Year"].dt.date
+  data_train = df[df['Year'] < date_split]
 
   data_test =  df[df['Year'] >= date_split]
 
