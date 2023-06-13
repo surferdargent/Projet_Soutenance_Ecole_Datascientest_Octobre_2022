@@ -160,7 +160,7 @@ def run():
     _left, mid, _right = st.columns(3)
     with _left:
 
-        st.image("./assets/Diapositive3.PNG",width=650)
+        st.image("./assets/Diapositive3.png",width=650)
        
     from sklearn.preprocessing import StandardScaler
     
@@ -337,7 +337,7 @@ def run():
             
       return df, model_dict
 
-    @st.cache_data()
+    # @st.cache_data()
     def importance_variables(model_dict):
          fig1 = plt.figure(figsize=(14,6))
          train_features = X_train
