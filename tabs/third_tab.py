@@ -301,91 +301,34 @@ def run():
          Une première approche consiste à utiliser de façon sélective les différents paramètres.
     """)
 
-       #Features d'origine à conserver
-    drop_variable1 = ['EloPoints','RankDiff', 'Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' , 'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
-    df1 = new_df_preprocessing_demo.drop(drop_variable1,axis=1)
-    df1 = split_normalisation(df1,1)
+    df1 = df_scores[df_scores['Noms'] == 'Features d\'origine ']
+    df2 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO']
+    df3 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement']
+    df4 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois']
+    df5 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois']
 
-    
-    # "Features d'origine + Points ELO"  à conserver
-    drop_variable2 = ['RankDiff',
-    'Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' ,
-    'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
-    df2 = new_df_preprocessing_demo.drop(drop_variable2,axis=1)
-    df2 = split_normalisation(df2,2)
-    
+    df1, best_model_1 = split_normalisation(new_df_preprocessing_demo)
+    df2, best_model_2 = split_normalisation(new_df_preprocessing_demo)
+    df3, best_model_3 = split_normalisation(new_df_preprocessing_demo)
+    df4, best_model_4 = split_normalisation(new_df_preprocessing_demo)
+    df5, best_model_5 = split_normalisation(new_df_preprocessing_demo)
 
-    #"Features d'origine + Points ELO + Diff. de classement "  à conserver
-    drop_variable3 = ['Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' ,
-    'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
-    df3 = new_df_preprocessing_demo.drop(drop_variable3,axis=1)
-    df3 = split_normalisation(df3,3)
+    lengths = [len(df1['Scores'].values), len(df2['Scores'].values), len(df3['Scores'].values), len(df4['Scores'].values),
+               len(df5['Scores'].values)]
 
-
-    #"Features d'origine + Points ELO + Diff. de classement + Moy.roulantes 6 mois"  à conserver
-    drop_variable4 = ['Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
-    df4 = new_df_preprocessing_demo.drop(drop_variable4,axis=1)
-    df4 = split_normalisation(df4,4)
-
-
-    #"Features d'origine + Points ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"  à conserver
-    df5 = new_df_preprocessing_demo  
-    df5 = split_normalisation(df5,5)
-
-    
-    
-    # model_choisi = st.selectbox(label = "Choix des Features", options = ["Features d'origine ", "Features d'origine + Pts ELO", "Features d'origine + Pts ELO + Diff. de classement","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"])
-    st.markdown("""
-      Bilan des performances des différentes options
-                 """)
-    df6 = df1
-    df1 = df1["Scores 1"]
-    df2 = df2["Scores 2"]
-    df3 = df3["Scores 3"]
-    df4 = df4["Scores 4"]
-    df5 = df5["Scores 5"]
-    df6=df6["Noms"]
-    
-    
-    @st.cache(suppress_st_warning=True)
-    def creat_df():
-         
-         data1 =  pd.concat([df6,df1],axis=1)
-          
-         data2 =  pd.concat([df6,df1,df2],axis=1)
-          
-         data3 =  pd.concat([df6,df1,df2,df3],axis=1)
-          
-         data4 =  pd.concat([df6,df1,df2,df3,df4],axis=1)
-          
-         data5 =  pd.concat([df6,df1,df2,df3,df4,df5],axis=1)
-         return (data1,data2,data3,data4,data5)
-    data1,data2,data3,data4,data5 = creat_df()
-            
-       
-    data1 =  pd.concat([df6,df1],axis=1)
-
-    data2 =  pd.concat([df6,df1,df2],axis=1)
-
-    data3 =  pd.concat([df6,df1,df2,df3],axis=1)
-
-    data4 =  pd.concat([df6,df1,df2,df3,df4],axis=1)
-
-    data5 =  pd.concat([df6,df1,df2,df3,df4,df5],axis=1)
-    selections = ["Features d'origine" , "Features d'origine + Pts ELO", "Features d'origine + Pts ELO + Diff. de classement","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"]
-
-    selection = st.radio("", selections,index= 4)
-
-    if selection == selections[0]: 
-        st.write(data1)
-    elif  selection == selections[1]:
-        st.write(data2)
-    elif  selection == selections[2]:
-        st.write(data3)
-    elif  selection == selections[3]:
-        st.write(data4)
-    elif  selection == selections[4]:
-        st.write(data5)
+    if len(set(lengths)) != 1:
+        st.error("Les tableaux de scores n'ont pas la même longueur.")
+    else:
+        df_scores = pd.DataFrame({
+            'Modèle': ['Features d\'origine', 'Features d\'origine + Pts ELO',
+                       'Features d\'origine + Pts ELO + Diff. de classement',
+                       'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois',
+                       'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois'],
+            'Scores 1': df1['Scores'].values,
+            'Scores 2': df2['Scores'].values,
+            'Scores 3': df3['Scores'].values,
+            'Scores 4': df4['Scores'].values,
+            'Scores 5': df5['Scores'].values
         })
 
     st.markdown("""
