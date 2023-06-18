@@ -20,7 +20,6 @@ st.markdown(f"<style>{style}</style>", unsafe_allow_html=True)
 import config
 from tabs import intro, second_tab, third_tab, fourth_tab
 
-
 TABS = OrderedDict(
     [
         (intro.sidebar_name, intro),
