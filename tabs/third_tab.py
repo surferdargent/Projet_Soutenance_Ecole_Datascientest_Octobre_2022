@@ -175,20 +175,22 @@ def run():
         models.append(('KNeighbors', KNeighborsClassifier()))
         models.append(('Random Forest', RandomForestClassifier(random_state=123)))
 
-        accuracies = []
-        names = []
+        scores = []  # Liste pour stocker les scores par modèle
 
         for name, model in models:
             model.fit(X_train, y_train)
             accuracy = model.score(X_test, y_test)
-            accuracies.append(accuracy)
-            names.append(name)
+            scores.append((name, accuracy))  # Ajouter le score à la liste des scores
 
             msg = "Résultat pour %s: %f" % (name, accuracy)
             st.write(msg)
 
+        # Convertir la liste des scores en dataframe pandas pour l'afficher dans un tableau
+        scores_df = pd.DataFrame(scores, columns=['Modèle', 'Score'])
+        st.write(scores_df)
+
         fig = plt.figure()
-        sns.barplot(x=names, y=accuracies)
+        sns.barplot(x='Modèle', y='Score', data=scores_df)  # Utiliser le dataframe pour créer le graphique
         plt.show()
         st.pyplot(fig)
 
