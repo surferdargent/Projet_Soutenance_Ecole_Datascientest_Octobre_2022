@@ -20,19 +20,18 @@ def run():
 
     st.markdown(
         """
-      ## Préprocessing
+        ## Préprocessing
         """
     )
 
     st.markdown(
         """
-      :tennis: Les variables :
+        :tennis: Les variables :
         """
     )
     st.markdown(
         """
         Il faut avant de s'attaquer à la modélisation encoder nos variables.
-        
         """
     )
 
@@ -55,7 +54,7 @@ def run():
         st.markdown("""
             _*Action*_
             """
-                   )
+        )
         st.markdown(
             """Toutes les variables de type "object" devront être encodées ..."""
         )
@@ -221,8 +220,6 @@ def run():
     """)
 
     import itertools
-
-# ...
 
     def split_normalisation(data):
         df = pd.DataFrame(data)
@@ -400,3 +397,4 @@ def run():
         Le score après l'optimisation est de 0,88, ce qui est meilleur que les prédictions des bookmakers. Nous avons donc répondu à notre première problématique : "Battre les bookmakers est donc possible". L'accuracy calculée sur le jeu de validation est de 88 %, elle concerne l'ensemble des prédictions, qu'il s'agisse de la prédiction des victoires ou des défaites. Le rapport entre la précision et le rappel est d'environ 1, ce qui suggère que notre modèle est relativement robuste et équilibré. Il nous reste maintenant à déterminer la stratégie de paris.
     """)
 
+run()
