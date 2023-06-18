@@ -247,30 +247,40 @@ def run():
         X_train = X_train_scaled
         X_test = X_test_scaled
     
-        models = []
-        models.append(('Logistic Regression', LogisticRegression(random_state=123)))
-        models.append(('KNeighbors', KNeighborsClassifier()))
-        models.append(('Random Forest', RandomForestClassifier(random_state=123)))
+        models = {
+            'Logistic Regression': LogisticRegression(random_state=123),
+            'KNeighbors': KNeighborsClassifier(),
+            'Random Forest': RandomForestClassifier(random_state=123)
+        }
     
-        accuracies = []
-        names = []
-        best_model = None
-        best_accuracy = 0
+        best_scores = {}
+        best_variable_combinations = {}
     
-        for name, model in models:
-            model.fit(X_train, y_train)
-            accuracy = model.score(X_test, y_test)
-            accuracies.append(accuracy)
-            names.append(name)
+        for model_name, model in models.items():
+            best_score = 0
+            best_variables = None
     
-            # Garder le modèle avec le meilleur score
-            if accuracy > best_accuracy:
-                best_model = model
-                best_accuracy = accuracy
+            for r in range(1, len(X_train.columns) + 1):
+                combinations = itertools.combinations(X_train.columns, r)
     
-        df = pd.DataFrame(list(zip(names, accuracies)), columns=['Noms', 'Scores'])
+                for combination in combinations:
+                    selected_variables = list(combination)
     
-        return df, best_model
+                    X_train_selected = X_train[selected_variables]
+                    X_test_selected = X_test[selected_variables]
+    
+                    model.fit(X_train_selected, y_train)
+                    score = model.score(X_test_selected, y_test)
+    
+                    if score > best_score:
+                        best_score = score
+                        best_variables = selected_variables
+    
+            best_scores[model_name] = best_score
+            best_variable_combinations[model_name] = best_variables
+    
+        return best_scores, best_variable_combinations
+
 
 
     def importance_variables(model):
