@@ -1,10 +1,12 @@
+
+# -*- coding: utf-8 -*-
 """
 Created on Sun Oct 16 16:16:13 2022.
 
 @author: olecu
+
 """
 
-# -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
 import numpy as np
