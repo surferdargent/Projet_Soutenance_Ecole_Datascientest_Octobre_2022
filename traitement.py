@@ -257,41 +257,34 @@ new_df_preprocessing = new_df_preprocessing.sort_values(by=["Year"],ascending = 
 # @st.cache(allow_output_mutation=True)
 def split(data):
     df = pd.DataFrame(data)
-    df = data.sort_values(by=["Year"],ascending = True)
-    
+    df = df.sort_values(by=["Year"], ascending=True)
+
     # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
     date_split = pd.Timestamp(2016, 1, 1)
-    
+
     df['Year'] = pd.to_datetime(df['Year'])
-    data_train = df[df['Year'] < pd.Timestamp(date_split)]
-    
-    # data_train = df[df['Year'] < date_split]
-    data_test = df[df['Year'] >= pd.Timestamp(date_split)]
-    # data_test =  df[df['Year'] >= date_split]
-    
-    # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
+    data_train = df[df['Year'] < date_split]
+    data_test = df[df['Year'] >= date_split]
+
+    # Création des quatre variables pour l'entrainement et le test (X_train, X_test, y_train, y_test)
     X_train = data_train.drop(['Win'], axis=1)
-    X_test =  data_test.drop(['Win'], axis=1)
-    
+    X_test = data_test.drop(['Win'], axis=1)
+
     y_train = data_train['Win']
-    y_test =  data_test['Win']
-    
-    
+    y_test = data_test['Win']
+
     X_train = X_train.select_dtypes('float')
     X_test = X_test.select_dtypes('float')
-    
-    
+
     # On normalise nos données numériques :
     scaler = StandardScaler()
-    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns = X_train.columns)
-    X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
-    
-    
+    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
+    X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
+
     X_train = X_train_scaled
     X_test = X_test_scaled
-    
-    #y_test = y_test.reset_index(drop=True)
-    return X_train,y_train,X_test,y_test
+
+    return X_train, y_train, X_test, y_test
 st.markdown("""Nous pouvons passer à la modélisation.""")
 st.markdown("---")
 st.markdown(
@@ -369,59 +362,50 @@ st.markdown("""
 # Fonction split et normalisation des données
 # @st.cache(suppress_st_warning=True)
 # @st.cache(allow_output_mutation=True)
-def split_normalisation(data,option):
-    
-  df = pd.DataFrame(data)
-  df = data.sort_values(by=["Year"],ascending = True)
-  x = option
-   
-  
+def split_normalisation(data, option):
+    df = pd.DataFrame(data)
+    df = df.sort_values(by=["Year"], ascending=True)
 
-# Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
-  date_split = pd.Timestamp(2016, 1, 1).date()  # Conversion en datetime.date
-  df["Year"] = pd.to_datetime(df["Year"])
-  df["Year"]= df["Year"].dt.date
-  data_train = df[df['Year'] < date_split]
-  data_test =  df[df['Year'] >= date_split]
+    # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
+    date_split = pd.Timestamp(2016, 1, 1).date()  # Conversion en datetime.date
+    df["Year"] = pd.to_datetime(df["Year"])
+    df["Year"] = df["Year"].dt.date
+    data_train = df[df['Year'] < date_split]
+    data_test = df[df['Year'] >= date_split]
 
+    # Création des quatre variables pour l'entrainement et le test (X_train, X_test, y_train, y_test)
+    X_train = data_train.drop(['Win'], axis=1)
+    X_test = data_test.drop(['Win'], axis=1)
+    y_train = data_train['Win']
+    y_test = data_test['Win']
 
-# Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
-  X_train = data_train.drop(['Win'], axis=1)
-  X_test =  data_test.drop(['Win'], axis=1)
-  y_train = data_train['Win']
-  y_test =  data_test['Win']
+    X_train = X_train.select_dtypes('float')
+    X_test = X_test.select_dtypes('float')
 
+    # On normalise nos données numériques :
+    scaler = StandardScaler()
+    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
+    X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
+    X_train = X_train_scaled
+    X_test = X_test_scaled
 
-  X_train = X_train.select_dtypes('float')
-  X_test = X_test.select_dtypes('float')
+    models = []
+    models.append(('Logistic Regression', LogisticRegression(random_state=123)))
+    models.append(('KNeighbors', KNeighborsClassifier()))
+    models.append(('Random Forest', RandomForestClassifier(random_state=123)))
 
+    accuracies = []
+    names = []
 
-# On normalise nos données numériques :
-  scaler = StandardScaler()
-  X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns = X_train.columns)
-  X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
-  X_train = X_train_scaled
-  X_test = X_test_scaled
-  models = []
-  models.append(('Logistic Regression',LogisticRegression(random_state=123)))
-  models.append(('KNeighbors', KNeighborsClassifier()))
-  models.append(('Random Forest', RandomForestClassifier(random_state=123)))
-  accuracies = []
-  names = []
-  data=[]
-    
-  for name, model in models:
-        model.fit(X_train,y_train)
-        
-        accuracy = model.score(X_test,y_test)
+    for name, model in models:
+        model.fit(X_train, y_train)
+        accuracy = model.score(X_test, y_test)
         accuracies.append(accuracy)
         names.append(name)
-        data.append([names,accuracies]) 
-        # with open(f".\models\{name}.sav",'wb') as f:
-        # pickle.dump(model,f)   
-        df = pd.DataFrame(list(zip(names,accuracies)), columns=['Noms', f"Scores {x}"])
-      
-  return df
+
+    df = pd.DataFrame(list(zip(names, accuracies)), columns=['Noms', f"Scores {option}"])
+
+    return df
  
 def importance_variables():
     RandomForestClassifier(random_state=123).fit(X_train,y_train)
