@@ -265,7 +265,8 @@ def run():
         fig = plt.figure()
      
     
-        sns.barplot(names, accuracies)
+        sns.barplot(x=names, y=accuracies)
+
         #plt.title('Comparaison des modèles')
         
         #plt.ylabel('Accuracy')
