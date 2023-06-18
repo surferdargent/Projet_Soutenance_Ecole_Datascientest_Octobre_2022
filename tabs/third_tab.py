@@ -291,7 +291,9 @@ def run():
    Pour ce faire, nous avons établi une *matrice de  corrélation* :
    """
    )
+    new_df_preprocessing = new_df_preprocessing.apply(pd.to_numeric, errors='ignore')
     cor = new_df_preprocessing.corr()
+
    
 
     fig, ax = plt.subplots(figsize=(12,10))
