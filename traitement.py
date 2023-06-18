@@ -141,7 +141,9 @@ st.markdown(
 
 new_df_preprocessing = pd.read_csv('df_variables_enrichies.csv',parse_dates=['Year'])
 new_df_preprocessing['Year'] = new_df_preprocessing['Year'].astype(str)
+new_df_preprocessing['Year'] = new_df_preprocessing['Year'].apply(lambda x: x.strftime('%Y-%m-%d'))
 new_df_preprocessing['Year'] = pd.to_datetime(new_df_preprocessing['Year'])
+
 
 new_df_preprocessing['Year'] = new_df_preprocessing['Year'].dt.date
   # Affichage info df df
