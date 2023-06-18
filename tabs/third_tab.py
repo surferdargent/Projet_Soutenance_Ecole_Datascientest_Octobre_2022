@@ -220,6 +220,10 @@ def run():
         Ces résultats semblent plus conformes à ce que l'on peut attendre pour ce type de données. Le meilleur modèle est le Random Forest avec un score de 0,88, ce qui est meilleur que les prédictions des bookmakers. Nous allons maintenant essayer d'améliorer les performances du modèle.
     """)
 
+    import itertools
+
+# ...
+
     def split_normalisation(data):
         df = pd.DataFrame(data)
         df = df.sort_values(by=["Year"], ascending=True)
@@ -280,6 +284,7 @@ def run():
             best_variable_combinations[model_name] = best_variables
     
         return best_scores, best_variable_combinations
+
 
 
 
