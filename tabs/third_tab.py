@@ -243,9 +243,6 @@ def run():
     
    
 
-    # Exécution des modèles
-    # @st.cache(suppress_st_warning=True)
-    # @st.cache(allow_output_mutation=True)
     def train_model():
        
         models = []
@@ -324,144 +321,80 @@ def run():
     
    
      
-      # Fonction split et normalisation des données
-      # @st.cache(suppress_st_warning=True)
-      # @st.cache(allow_output_mutation=True)
-      
-    # def split_normalisation1(data):
-    #     df5 = pd.DataFrame(data)
-    #     df = df5
-    #     df = data.sort_values(by=["Year"],ascending = True)
-    #     option_var = {
-    #     1: ['EloPoints','RankDiff', 'Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' , 'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois'],
-    #     2: ['RankDiff','Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' ,'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois'],
-    #     3: ['Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' ,'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois'],
-    #     4: ['Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
-    #     }
-        
-        
-    #     for col in df.columns:
-    #         for i,(j,k) in enumerate(option_var.items()): 
-    #                 i=i+1
-    #                 df = df5
-    #                 df =df,j.value
-    
-    #                 df= df.drop(k, 1)
-                    
-                    
-                    
-                    
-    #                 # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
-    #                 date_split = pd.Timestamp(2016, 1, 1)
-    #                 data_train = df[df['Year'] < date_split]
-    #                 data_test =  df[df['Year'] >= date_split]
-                   
-    #                 # Création des quatres variables pour l'entrainement et le test ( X_train, X_test, y_train, y_test )
-    #                 X_train = data_train.drop(['Win'], axis=1)
-    #                 X_test =  data_test.drop(['Win'], axis=1)
-    #                 y_train = data_train['Win']
-    #                 y_test =  data_test['Win']
-                   
-                   
-    #                 X_train = X_train.select_dtypes('float')
-    #                 X_test = X_test.select_dtypes('float')
-                   
-                   
-    #                 # On normalise nos données numériques :
-    #                 scaler = StandardScaler()
-    #                 X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns = X_train.columns)
-    #                 X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns = X_test.columns)
-    #                 X_train = X_train_scaled
-    #                 X_test = X_test_scaled
-    #                 models = []
-    #                 models.append(('Logistic Regression',LogisticRegression(random_state=123)))
-    #                 models.append(('KNeighbors', KNeighborsClassifier()))
-    #                 models.append(('Random Forest', RandomForestClassifier(random_state=123)))
-    #                 accuracies = []
-    #                 names = []
-    #                 data=[]
-    #                 x = i+1
-    #                 for name, model in models:
-    #                     model.fit(X_train,y_train)
-    #                     accuracy = model.score(X_test,y_test)
-    #                     accuracies.append(accuracy)
-    #                     names.append(name)
-    #                     data.append([names,accuracies]) 
-    #                     with open(f".\models\{name}.sav",'wb') as f:
-    #                       pickle.dump(model,f)   
-    #                     df = pd.DataFrame(list(zip(names,accuracies)), columns=['Noms', f"Scores {x}"])
-                        
-            
-    #                 return df
-            
-           
-     
    
    
     
     # Fonction split et normalisation des données
     # @st.cache(suppress_st_warning=True)
     # @st.cache(allow_output_mutation=True)
-    def split_normalisation(data, option):
-        df = pd.DataFrame(data)
-        df = df.sort_values(by=["Year"], ascending=True)
-    
-        # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
-        date_split = pd.Timestamp(2016, 1, 1).date()  # Conversion en datetime.date
-        df["Year"] = pd.to_datetime(df["Year"])
-        df["Year"] = df["Year"].dt.date
-        data_train = df[df['Year'] < date_split]
-        data_test = df[df['Year'] >= date_split]
-    
-        # Création des quatre variables pour l'entrainement et le test (X_train, X_test, y_train, y_test)
-        X_train = data_train.drop(['Win'], axis=1)
-        X_test = data_test.drop(['Win'], axis=1)
-        y_train = data_train['Win']
-        y_test = data_test['Win']
-    
-        X_train = X_train.select_dtypes('float')
-        X_test = X_test.select_dtypes('float')
-    
-        # On normalise nos données numériques :
-        scaler = StandardScaler()
-        X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
-        X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
-        X_train = X_train_scaled
-        X_test = X_test_scaled
-    
-        models = []
-        models.append(('Logistic Regression', LogisticRegression(random_state=123)))
-        models.append(('KNeighbors', KNeighborsClassifier()))
-        models.append(('Random Forest', RandomForestClassifier(random_state=123)))
-    
-        accuracies = []
-        names = []
+    def split_normalisation(data):
+    df = pd.DataFrame(data)
+    df = df.sort_values(by=["Year"], ascending=True)
 
-        for name, model in models:
-            model.fit(X_train, y_train)
-            accuracy = model.score(X_test, y_test)
-            accuracies.append(accuracy)
-            names.append(name)
-    
-        df = pd.DataFrame(list(zip(names, accuracies)), columns=['Noms', f"Scores {option}"])
+    # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
+    date_split = pd.Timestamp(2016, 1, 1).date()  # Conversion en datetime.date
+    df["Year"] = pd.to_datetime(df["Year"])
+    df["Year"] = df["Year"].dt.date
+    data_train = df[df['Year'] < date_split]
+    data_test = df[df['Year'] >= date_split]
 
-        return df
-        
-    def importance_variables():
-         fig1 = plt.figure(figsize=(14,6))
-         train_features = X_train
-         rf_loaded = pickle.load(open('.\models\Random Forest.sav', 'rb'))
-         vars_imp = pd.Series(rf_loaded.feature_importances_,index=train_features.columns).sort_values(ascending=False)
-         sns.barplot(x=vars_imp.index,y=vars_imp)
-         plt.xticks(rotation=90)
-         plt.xlabel('Variables')
-         plt.ylabel("Scores d'importance de la variable")
-            
-         plt.show()
-         st.write("""Ci dessous l'importance des variables nous donne des indications sur le poids de chaque variable sur notre modèle.
-         """)  
-         return st.pyplot(fig1)
-    importance_variables()
+    # Création des quatre variables pour l'entrainement et le test (X_train, X_test, y_train, y_test)
+    X_train = data_train.drop(['Win'], axis=1)
+    X_test = data_test.drop(['Win'], axis=1)
+    y_train = data_train['Win']
+    y_test = data_test['Win']
+
+    X_train = X_train.select_dtypes('float')
+    X_test = X_test.select_dtypes('float')
+
+    # On normalise nos données numériques :
+    scaler = StandardScaler()
+    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
+    X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
+    X_train = X_train_scaled
+    X_test = X_test_scaled
+
+    models = []
+    models.append(('Logistic Regression', LogisticRegression(random_state=123)))
+    models.append(('KNeighbors', KNeighborsClassifier()))
+    models.append(('Random Forest', RandomForestClassifier(random_state=123)))
+
+    accuracies = []
+    names = []
+    best_model = None
+    best_accuracy = 0
+
+    for name, model in models:
+        model.fit(X_train, y_train)
+        accuracy = model.score(X_test, y_test)
+        accuracies.append(accuracy)
+        names.append(name)
+
+        # Garder le modèle avec le meilleur score
+        if accuracy > best_accuracy:
+            best_model = model
+            best_accuracy = accuracy
+
+    df = pd.DataFrame(list(zip(names, accuracies)), columns=['Noms', 'Scores'])
+
+    return df, best_model
+    
+    
+    def importance_variables(model):
+    fig1 = plt.figure(figsize=(14,6))
+    train_features = X_train
+    vars_imp = pd.Series(model.feature_importances_, index=train_features.columns).sort_values(ascending=False)
+    sns.barplot(x=vars_imp.index, y=vars_imp)
+    plt.xticks(rotation=90)
+    plt.xlabel('Variables')
+    plt.ylabel("Scores d'importance de la variable")
+
+    plt.show()
+    st.write("""Ci-dessous l'importance des variables nous donne des indications sur le poids de chaque variable sur notre modèle.""")
+    st.pyplot(fig1)
+    
+    importance_variables(best_model)
+
      
     st.markdown("""
     :tennis: Amélioration du modèle RF
@@ -576,39 +509,26 @@ def run():
     
     
 
-    def optimisation_models():
-        grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
-        # Optimisation du modèle
-        # rf = RandomForestClassifier(random_state=123) 
-        # param_grid_rf = [{ 'n_estimators' : [1000] ,
-        # 'min_samples_leaf' :  [1 ] ,
-        # 'max_features' :  ['sqrt'  ]}] 
-        
-        
-        
-        # param_grid_rf = [{ 'n_estimators' : [ 10 , 50 , 100 , 250 , 500 , 1000 ],
-        # 'min_samples_leaf' : [ 1 , 3 , 5 ],
-        # 'max_features' : [ 'sqrt' , 'log2' ]}] 
-        # grid_rf = GridSearchCV(estimator=rf_loaded, param_grid=param_grid_rf)
-        
-        # Entraînement du modèle
-        # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))
-        grid_rf.fit(X_train, y_train)
-        # with open('.\models\Grid_Random Forest.sav','wb') as f:
-        #     pickle.dump( grid_rf,f)
-        st.write("Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_))
-        st.write("Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test)))
-         
-         # Prédiction du modèle
-       #y_pred_rf = pickle.load(open('.\models\y_pred_rf_sauv.csv', 'rb'))
-        y_pred_rf = grid_rf.predict(X_test) 
-        #with open('.\models\y_pred_rf_sauv.csv','wb') as f:
-            #pickle.dump( y_pred_rf,f)
-        
-        
-        st.text('Rapport de classification:\n ' + classification_report(y_test, y_pred_rf))
-        
-        return   y_pred_rf
+    def optimisation_models(X_train, y_train, X_test, y_test):
+    rf = RandomForestClassifier(random_state=123)
+
+    param_grid_rf = [
+        {'n_estimators': [1000],
+         'min_samples_leaf': [1],
+         'max_features': ['sqrt']}
+    ]
+
+    grid_rf = GridSearchCV(estimator=rf, param_grid=param_grid_rf)
+    grid_rf.fit(X_train, y_train)
+
+    st.write("Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_))
+    st.write("Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test)))
+
+    y_pred_rf = grid_rf.predict(X_test)
+
+    st.text('Rapport de classification:\n' + classification_report(y_test, y_pred_rf))
+
+    return y_pred_rf
   
     if st.button('Hyperparamètres'):
             optimisation_models() 
