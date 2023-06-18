@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
+import streamlit as st
 import pandas as pd 
-import seaborn as sns 
+import seaborn as sns
+import matplotlib.pyplot as plt
+import streamlit as st
+
+import seaborn as sns
+import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report
-import streamlit as st 
-# from traitement import split_normalisation, optimisation_model,importance_variables
-import matplotlib.pyplot as plt 
-#from traitement import split_normalisation
-sns.set_theme()  
-import seaborn as sns 
 from sklearn.linear_model import LogisticRegression 
-
 from sklearn.neighbors import KNeighborsClassifier
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
 import io
+import pickle
+from sklearn.metrics import classification_report
+from sklearn.linear_model import LogisticRegression 
+from sklearn.neighbors import KNeighborsClassifier
 
 
 #title = "Préprocessing et Modélisation"
@@ -328,70 +334,70 @@ def run():
     # @st.cache(suppress_st_warning=True)
     # @st.cache(allow_output_mutation=True)
     def split_normalisation(data):
-    df = pd.DataFrame(data)
-    df = df.sort_values(by=["Year"], ascending=True)
-
-    # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
-    date_split = pd.Timestamp(2016, 1, 1).date()  # Conversion en datetime.date
-    df["Year"] = pd.to_datetime(df["Year"])
-    df["Year"] = df["Year"].dt.date
-    data_train = df[df['Year'] < date_split]
-    data_test = df[df['Year'] >= date_split]
-
-    # Création des quatre variables pour l'entrainement et le test (X_train, X_test, y_train, y_test)
-    X_train = data_train.drop(['Win'], axis=1)
-    X_test = data_test.drop(['Win'], axis=1)
-    y_train = data_train['Win']
-    y_test = data_test['Win']
-
-    X_train = X_train.select_dtypes('float')
-    X_test = X_test.select_dtypes('float')
-
-    # On normalise nos données numériques :
-    scaler = StandardScaler()
-    X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
-    X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
-    X_train = X_train_scaled
-    X_test = X_test_scaled
-
-    models = []
-    models.append(('Logistic Regression', LogisticRegression(random_state=123)))
-    models.append(('KNeighbors', KNeighborsClassifier()))
-    models.append(('Random Forest', RandomForestClassifier(random_state=123)))
-
-    accuracies = []
-    names = []
-    best_model = None
-    best_accuracy = 0
-
-    for name, model in models:
-        model.fit(X_train, y_train)
-        accuracy = model.score(X_test, y_test)
-        accuracies.append(accuracy)
-        names.append(name)
-
-        # Garder le modèle avec le meilleur score
-        if accuracy > best_accuracy:
-            best_model = model
-            best_accuracy = accuracy
-
-    df = pd.DataFrame(list(zip(names, accuracies)), columns=['Noms', 'Scores'])
-
-    return df, best_model
+        df = pd.DataFrame(data)
+        df = df.sort_values(by=["Year"], ascending=True)
+    
+        # Diviser le dataset en "train" et "test" toutes les données avant le 01 janvier 2016 seront égales au "train" et après au test
+        date_split = pd.Timestamp(2016, 1, 1).date()  # Conversion en datetime.date
+        df["Year"] = pd.to_datetime(df["Year"])
+        df["Year"] = df["Year"].dt.date
+        data_train = df[df['Year'] < date_split]
+        data_test = df[df['Year'] >= date_split]
+    
+        # Création des quatre variables pour l'entrainement et le test (X_train, X_test, y_train, y_test)
+        X_train = data_train.drop(['Win'], axis=1)
+        X_test = data_test.drop(['Win'], axis=1)
+        y_train = data_train['Win']
+        y_test = data_test['Win']
+    
+        X_train = X_train.select_dtypes('float')
+        X_test = X_test.select_dtypes('float')
+    
+        # On normalise nos données numériques :
+        scaler = StandardScaler()
+        X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns)
+        X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns)
+        X_train = X_train_scaled
+        X_test = X_test_scaled
+    
+        models = []
+        models.append(('Logistic Regression', LogisticRegression(random_state=123)))
+        models.append(('KNeighbors', KNeighborsClassifier()))
+        models.append(('Random Forest', RandomForestClassifier(random_state=123)))
+    
+        accuracies = []
+        names = []
+        best_model = None
+        best_accuracy = 0
+    
+        for name, model in models:
+            model.fit(X_train, y_train)
+            accuracy = model.score(X_test, y_test)
+            accuracies.append(accuracy)
+            names.append(name)
+    
+            # Garder le modèle avec le meilleur score
+            if accuracy > best_accuracy:
+                best_model = model
+                best_accuracy = accuracy
+    
+        df = pd.DataFrame(list(zip(names, accuracies)), columns=['Noms', 'Scores'])
+    
+        return df, best_model
     
     
     def importance_variables(model):
-    fig1 = plt.figure(figsize=(14,6))
-    train_features = X_train
-    vars_imp = pd.Series(model.feature_importances_, index=train_features.columns).sort_values(ascending=False)
-    sns.barplot(x=vars_imp.index, y=vars_imp)
-    plt.xticks(rotation=90)
-    plt.xlabel('Variables')
-    plt.ylabel("Scores d'importance de la variable")
-
-    plt.show()
-    st.write("""Ci-dessous l'importance des variables nous donne des indications sur le poids de chaque variable sur notre modèle.""")
-    st.pyplot(fig1)
+        fig1 = plt.figure(figsize=(14,6))
+        train_features = X_train
+        vars_imp = pd.Series(model.feature_importances_, index=train_features.columns).sort_values(ascending=False)
+        sns.barplot(x=vars_imp.index, y=vars_imp)
+        plt.xticks(rotation=90)
+        plt.xlabel('Variables')
+        plt.ylabel("Scores d'importance de la variable")
+    
+        plt.show()
+        st.write("""Ci-dessous l'importance des variables nous donne des indications sur le poids de chaque variable sur notre modèle.""")
+        st.pyplot(fig1)
     
     importance_variables(best_model)
 
@@ -510,25 +516,25 @@ def run():
     
 
     def optimisation_models(X_train, y_train, X_test, y_test):
-    rf = RandomForestClassifier(random_state=123)
-
-    param_grid_rf = [
-        {'n_estimators': [1000],
-         'min_samples_leaf': [1],
-         'max_features': ['sqrt']}
-    ]
-
-    grid_rf = GridSearchCV(estimator=rf, param_grid=param_grid_rf)
-    grid_rf.fit(X_train, y_train)
-
-    st.write("Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_))
-    st.write("Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test)))
-
-    y_pred_rf = grid_rf.predict(X_test)
-
-    st.text('Rapport de classification:\n' + classification_report(y_test, y_pred_rf))
-
-    return y_pred_rf
+        rf = RandomForestClassifier(random_state=123)
+    
+        param_grid_rf = [
+            {'n_estimators': [1000],
+             'min_samples_leaf': [1],
+             'max_features': ['sqrt']}
+        ]
+    
+        grid_rf = GridSearchCV(estimator=rf, param_grid=param_grid_rf)
+        grid_rf.fit(X_train, y_train)
+    
+        st.write("Les meilleurs paramètres sont de : {}".format(grid_rf.best_params_))
+        st.write("Le score du Random Forest est de : {}".format(grid_rf.score(X_test, y_test)))
+    
+        y_pred_rf = grid_rf.predict(X_test)
+    
+        st.text('Rapport de classification:\n' + classification_report(y_test, y_pred_rf))
+    
+        return y_pred_rf
   
     if st.button('Hyperparamètres'):
             optimisation_models() 
