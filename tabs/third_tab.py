@@ -228,111 +228,66 @@ def run():
         X_test = X_test_scaled
     
         return X_train, y_train, X_test, y_test
-    st.markdown("""Nous pouvons passer à la modélisation.""")
-    st.markdown("---")
-    st.markdown(
-        """
-      ## Modélisation
-        """
-    )
-                
     
-     
-    st.markdown(""":tennis: 1er entraînement""")
     
-    X_train,y_train,X_test,y_test = split(new_df_preprocessing)  
-    # new_y_test=y_test  
-    
-    # Définition du modèle
-
-    import pickle
-    
-   
-
     def train_model():
-       
+        X_train, y_train, X_test, y_test = split(new_df_preprocessing)
+    
         models = []
-        models.append(('Logistic Regression',LogisticRegression(random_state=123)))
+        models.append(('Logistic Regression', LogisticRegression(random_state=123)))
         models.append(('KNeighbors', KNeighborsClassifier()))
         models.append(('Random Forest', RandomForestClassifier(random_state=123)))
+    
         accuracies = []
         names = []
-        
+    
         for name, model in models:
-           
-            model.fit(X_train,y_train)
-        
-            accuracy = model.score(X_test,y_test)
+            model.fit(X_train, y_train)
+            accuracy = model.score(X_test, y_test)
             accuracies.append(accuracy)
             names.append(name)
-           
+    
             msg = "Résultat pour %s: %f" % (name, accuracy)
             st.write(msg)
-            
-        fig = plt.figure()
-     
     
+        fig = plt.figure()
         sns.barplot(x=names, y=accuracies)
-
-        #plt.title('Comparaison des modèles')
-        
-        #plt.ylabel('Accuracy')
-        #plt.rcParams.update({'font.size': 1})
         plt.show()
-        st.pyplot(fig)      
- 
+        st.pyplot(fig)
+    
+    
     train_model()
     
+    st.markdown("""
+       Après avoir normalisé et entrainé les modèles, nous avons obtenu des scores qui sont au-dessus de 95 %.
+       Les performances de nos modèles laissent penser qu’il y a sans doute un surapprentissage, qu’il nous faut identifier. 
+       Pour ce faire, nous avons établi une matrice de corrélation.
+       """)
     
-    
-    
-    
-    st.markdown(
-   """
-   Après avoir normalisé et entrainé les modèles, nous avons obtenu des scores qui sont au dessus de 95 %.
-   Les performances de nos modèles laissent penser qu’il y a sans doute un surapprentissage, qu’il nous faut identifier. 
-   Pour ce faire, nous avons établi une *matrice de  corrélation* :
-   """
-   )
     new_df_preprocessing['Year'] = pd.to_datetime(new_df_preprocessing['Year'])
     cor = new_df_preprocessing.corr()
-
-
-   
-
-    fig, ax = plt.subplots(figsize=(12,10))
-    sns.heatmap(cor,ax=ax, cmap='coolwarm');
+    
+    fig, ax = plt.subplots(figsize=(12, 10))
+    sns.heatmap(cor, ax=ax, cmap='coolwarm')
     st.write(fig)
     
     
     st.markdown("""
-    Nous constatons que la variable "SetsWon" est fortement corrélée avec "Win" ce qui est normal car elle donne une indication sur le nombre de sets gagnés sur le match.
-    Par contre cette information nous ne l'avons pas avant le match il faut donc la supprimer des features et relancer le modèle.
-    
-    """)
+        Nous constatons que la variable "SetsWon" est fortement corrélée avec "Win", ce qui est normal car elle donne une indication sur le nombre de sets gagnés sur le match.
+        Par contre, cette information n'est pas disponible avant le match, il faut donc la supprimer des features et relancer le modèle.
+        """)
     
     st.markdown(""":tennis: 2ème entraînement """)
-    
-    
-    new_df_preprocessing_demo = new_df_preprocessing.drop("SetsWon",axis=1)
-    X_train,y_train,X_test,y_test = split(new_df_preprocessing_demo)  
-    
+    new_df_preprocessing_demo = new_df_preprocessing.drop("SetsWon", axis=1)
+    X_train, y_train, X_test, y_test = split(new_df_preprocessing_demo)
     train_model()
+    
     st.markdown("""
-    Ces résultats semblent plus conformes à ce que l’on peut attendre pour ce type de données.  
-    Le meilleur modèle est RF avec un score de 0.88, ce qui est meilleur que les prédictions des bookmakers. 
-    Nous allons maintenant tenter d’améliorer les performances du modèle. 
-    """)
+        Ces résultats semblent plus conformes à ce que l'on peut attendre pour ce type de données.  
+        Le meilleur modèle est le Random Forest avec un score de 0.88, ce qui est meilleur que les prédictions des bookmakers. 
+        Nous allons maintenant tenter d'améliorer les performances du modèle.
+        """)
     
-    
-   
-     
-   
-   
-    
-    # Fonction split et normalisation des données
-    # @st.cache(suppress_st_warning=True)
-    # @st.cache(allow_output_mutation=True)
     def split_normalisation(data):
         df = pd.DataFrame(data)
         df = df.sort_values(by=["Year"], ascending=True)
@@ -387,7 +342,7 @@ def run():
     
     
     def importance_variables(model):
-        fig1 = plt.figure(figsize=(14,6))
+        fig1 = plt.figure(figsize=(14, 6))
         train_features = X_train
         vars_imp = pd.Series(model.feature_importances_, index=train_features.columns).sort_values(ascending=False)
         sns.barplot(x=vars_imp.index, y=vars_imp)
@@ -399,123 +354,39 @@ def run():
         st.write("""Ci-dessous l'importance des variables nous donne des indications sur le poids de chaque variable sur notre modèle.""")
         st.pyplot(fig1)
     
+    
+    df_scores, best_model = split_normalisation(new_df_preprocessing_demo)
     importance_variables(best_model)
-
-     
-    st.markdown("""
-    :tennis: Amélioration du modèle RF
     
-    Nous allons procéder en deux étapes: nous allons tout d’abord identifier les paramètres qui  apportent le meilleur gain de performances en changeant les variables d’entraînement, puis  nous réglerons ensuite les hyperparamètres. 
-    """)
-
     st.markdown("""
-     - Analyses de la performance des variables
-     
-     Une première approche consiste à utiliser de façon sélective les différents paramètres.  
-
-
-     """)
+        :tennis: Amélioration du modèle RF
         
-    #Features d'origine à conserver
-    drop_variable1 = ['EloPoints','RankDiff', 'Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' , 'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
-    df1 = new_df_preprocessing_demo.drop(drop_variable1,axis=1)
-    df1 = split_normalisation(df1,1)
-  
-    
-    # "Features d'origine + Points ELO"  à conserver
-    drop_variable2 = ['RankDiff',
-    'Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' ,
-    'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
-    df2 = new_df_preprocessing_demo.drop(drop_variable2,axis=1)
-    df2 = split_normalisation(df2,2)
-    
-  
-    #"Features d'origine + Points ELO + Diff. de classement "  à conserver
-    drop_variable3 = ['Ratio_tours_6_mois','Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois' ,
-    'Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
-    df3 = new_df_preprocessing_demo.drop(drop_variable3,axis=1)
-    df3 = split_normalisation(df3,3)
-   
-  
-    #"Features d'origine + Points ELO + Diff. de classement + Moy.roulantes 6 mois"  à conserver
-    drop_variable4 = ['Ratio_tournois_18_mois', 'Ratio_tours_18_mois','Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
-    df4 = new_df_preprocessing_demo.drop(drop_variable4,axis=1)
-    df4 = split_normalisation(df4,4)
-  
-
-    #"Features d'origine + Points ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"  à conserver
-    df5 = new_df_preprocessing_demo  
-    df5 = split_normalisation(df5,5)
-  
-    
-    
-    #model_choisi = st.selectbox(label = "Choix des Features", options = ["Features d'origine ", "Features d'origine + Pts ELO", "Features d'origine + Pts ELO + Diff. de classement","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"])
-     
-    df6 = df1
-    df1 = df1["Scores 1"]
-    df2 = df2["Scores 2"]
-    df3 = df3["Scores 3"]
-    df4 = df4["Scores 4"]
-    df5 = df5["Scores 5"]
-    df6=df6["Noms"]
-    
-    
-    
-    
-   
+        Nous allons procéder en deux étapes : nous allons tout d'abord identifier les paramètres qui apportent le meilleur gain de performances en changeant les variables d'entraînement, puis nous réglerons ensuite les hyperparamètres.
+        """)
     
     st.markdown("""
-      Bilan des performances des différentes options
-
-                 """)
-       
-
-    #@st.cache(suppress_st_warning=True)
-    #@st.cache()
-    def train_model_demo(model_choisi):
-        data1 =  pd.concat([df6,df1],axis=1)
-     
-        data2 =  pd.concat([df6,df1,df2],axis=1)
-     
-        data3 =  pd.concat([df6,df1,df2,df3],axis=1)
-     
-        data4 =  pd.concat([df6,df1,df2,df3,df4],axis=1)
-     
-        data5 =  pd.concat([df6,df1,df2,df3,df4,df5],axis=1)
-      
-        if model_choisi == "Features d'origine ":
-           choix  = st.write(data1)
-        elif model_choisi == "Features d'origine + Pts ELO" :
-          choix = st.write(data2)
-        elif model_choisi == "Features d'origine + Pts ELO + Diff. de classement":
-         choix =  st.write(data3)
-        elif model_choisi == "Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois":
-         choix = st.write( data4)
-        elif model_choisi == "Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois":
-         choix =  st.write(data5)
+         - Analyses de la performance des variables
          
-         st.markdown("""
-                       Nous observons que le Random Forest obtient les meilleurs résultats mais nous pouvons encore les améliorer en optimisant les hyperparamètres.
-                             """)
-     
-         return choix
-        st.write(train_model_demo(model_choisi))   
+         Une première approche consiste à utiliser de façon sélective les différents paramètres.
+         """)
     
-   
-   
-    st.markdown(""" 
-                - L'optimisation
-                  """)
+    df1 = df_scores[df_scores['Noms'] == 'Features d\'origine ']
+    df2 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO']
+    df3 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement']
+    df4 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois']
+    df5 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois']
     
-    #rf_loaded = pickle.load(open('.\models\Random Forest.sav', 'rb'))
-    # grid_rf = pickle.load(open('.\models\Grid_Random Forest.sav', 'rb'))        
-    # @st.cache(suppress_st_warning=True)
-    # @st.cache(allow_output_mutation=True)
+    st.write(df1)
+    st.write(df2)
+    st.write(df3)
+    st.write(df4)
+    st.write(df5)
     
+    st.markdown("""
+        Nous observons que le Random Forest obtient les meilleurs résultats, mais nous pouvons encore les améliorer en optimisant les hyperparamètres.
+    """)
     
-    
-
-    def optimisation_models(X_train, y_train, X_test, y_test):
+    def optimisation_models():
         rf = RandomForestClassifier(random_state=123)
     
         param_grid_rf = [
@@ -534,28 +405,11 @@ def run():
     
         st.text('Rapport de classification:\n' + classification_report(y_test, y_pred_rf))
     
-        return y_pred_rf
-  
-    if st.button('Hyperparamètres'):
-            optimisation_models() 
-            st.markdown("""
-                     Le score est de 0.88 en optimisant meilleur que les prédictions des bookmakers nous avons donc répondu à notre première problématique "Battre les bookmakers c'est donc bien possible".
-                     L’accuracy calculée sur le jeu de validation est de 88 % , elle concerne l’ensemble des
-                     prédictions, qu’il s’agisse de la prédiction des victoires ou des défaites.
-                     Le rapport entre la précision et le rappel est d’environ 1, ce qui suggère que notre modèle
-                     est relativement robuste et équilibré. 
-                   
-                     Il nous reste désormais à déterminer la stratégie de paris.  """)       
+    optimisation_models()
     
-     
-        
-         
-         
-         
-    
-              
-    
-              
-            
-            
-            
+    st.markdown("""
+        Le score est de 0.88 après l'optimisation, meilleur que les prédictions des bookmakers. Nous avons donc répondu à notre première problématique : "Battre les bookmakers c'est donc bien possible".
+        L'accuracy calculée sur le jeu de validation est de 88 %, elle concerne l'ensemble des prédictions, qu'il s'agisse de la prédiction des victoires ou des défaites.
+        Le rapport entre la précision et le rappel est d'environ 1, ce qui suggère que notre modèle est relativement robuste et équilibré.
+        Il nous reste désormais à déterminer la stratégie de paris.
+    """)
