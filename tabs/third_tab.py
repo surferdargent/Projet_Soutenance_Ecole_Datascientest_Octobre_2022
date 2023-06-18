@@ -376,11 +376,20 @@ def run():
     df4 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois']
     df5 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois']
     
-    st.write(df1)
-    st.write(df2)
-    st.write(df3)
-    st.write(df4)
-    st.write(df5)
+    df1, best_model_1 = split_normalisation(new_df_preprocessing_demo)
+    df2, best_model_2 = split_normalisation(new_df_preprocessing_demo)
+    df3, best_model_3 = split_normalisation(new_df_preprocessing_demo)
+    df4, best_model_4 = split_normalisation(new_df_preprocessing_demo)
+    df5, best_model_5 = split_normalisation(new_df_preprocessing_demo)
+
+    df_scores = pd.DataFrame({
+        'Modèle': ['Features d\'origine', 'Features d\'origine + Pts ELO', 'Features d\'origine + Pts ELO + Diff. de classement', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois'],
+        'Scores 1': df1['Scores'],
+        'Scores 2': df2['Scores'],
+        'Scores 3': df3['Scores'],
+        'Scores 4': df4['Scores'],
+        'Scores 5': df5['Scores']
+    })
     
     st.markdown("""
         Nous observons que le Random Forest obtient les meilleurs résultats, mais nous pouvons encore les améliorer en optimisant les hyperparamètres.
