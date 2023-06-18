@@ -230,8 +230,8 @@ def run():
         return X_train, y_train, X_test, y_test
     
     
-    def train_model():
-        X_train, y_train, X_test, y_test = split(new_df_preprocessing)
+    def train_model(data):
+        X_train, y_train, X_test, y_test = split(data)
     
         models = []
         models.append(('Logistic Regression', LogisticRegression(random_state=123)))
@@ -256,7 +256,7 @@ def run():
         st.pyplot(fig)
     
     
-    train_model()
+    train_model(new_df_preprocessing)
     
     st.markdown("""
        Après avoir normalisé et entrainé les modèles, nous avons obtenu des scores qui sont au-dessus de 95 %.
@@ -280,7 +280,7 @@ def run():
     st.markdown(""":tennis: 2ème entraînement """)
     new_df_preprocessing_demo = new_df_preprocessing.drop("SetsWon", axis=1)
     X_train, y_train, X_test, y_test = split(new_df_preprocessing_demo)
-    train_model()
+    train_model(new_df_preprocessing_demo)
     
     st.markdown("""
         Ces résultats semblent plus conformes à ce que l'on peut attendre pour ce type de données.  
