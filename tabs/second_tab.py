@@ -45,7 +45,7 @@ def run():
     
     
    
-    @st.cache
+    @st.cache_data()
     def load_data():
         data = pd.read_csv('atp_data.csv',parse_dates=['Date'])
         data["Date"] = pd.to_datetime(data["Date"])
@@ -200,7 +200,7 @@ def run():
     new_df = new_df_strategie.drop('Predict_W_Bkm',axis = 1)
 
     # Moyenne roulante stat joueurs
-    @st.cache(allow_output_mutation=False)
+    @st.cache_data()
     def mean_rolling(new_df,x,y):
       # Moyenne roulante des victoires par joueur sur x et y mois en fonction des victoires totales, de la surface, du tournois et des tours 
       
