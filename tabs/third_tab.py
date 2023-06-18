@@ -359,3 +359,4 @@ def run():
     st.markdown("""
         Le score après l'optimisation est de 0,88, ce qui est meilleur que les prédictions des bookmakers. Nous avons donc répondu à notre première problématique : "Battre les bookmakers est donc possible". L'accuracy calculée sur le jeu de validation est de 88 %, elle concerne l'ensemble des prédictions, qu'il s'agisse de la prédiction des victoires ou des défaites. Le rapport entre la précision et le rappel est d'environ 1, ce qui suggère que notre modèle est relativement robuste et équilibré. Il nous reste maintenant à déterminer la stratégie de paris.
     """)
+
