@@ -291,8 +291,9 @@ def run():
    Pour ce faire, nous avons établi une *matrice de  corrélation* :
    """
    )
-    new_df_preprocessing['Year'] = new_df_preprocessing['Year'].astype(str)
+    new_df_preprocessing['Year'] = pd.to_datetime(new_df_preprocessing['Year'])
     cor = new_df_preprocessing.corr()
+
 
    
 
