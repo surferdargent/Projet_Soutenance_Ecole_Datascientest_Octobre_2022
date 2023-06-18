@@ -382,10 +382,10 @@ def run():
     df4, best_model_4 = split_normalisation(new_df_preprocessing_demo)
     df5, best_model_5 = split_normalisation(new_df_preprocessing_demo)
     
-    lengths = [df1.shape[0], df2.shape[0], df3.shape[0], df4.shape[0], df5.shape[0]]
+    lengths = [len(df1['Scores'].values), len(df2['Scores'].values), len(df3['Scores'].values), len(df4['Scores'].values), len(df5['Scores'].values)]
     
     if len(set(lengths)) != 1:
-        st.error("Les DataFrames n'ont pas la même longueur.")
+        st.error("Les tableaux de scores n'ont pas la même longueur.")
     else:
         df_scores = pd.DataFrame({
             'Modèle': ['Features d\'origine', 'Features d\'origine + Pts ELO', 'Features d\'origine + Pts ELO + Diff. de classement', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois'],
@@ -395,6 +395,7 @@ def run():
             'Scores 4': df4['Scores'].values,
             'Scores 5': df5['Scores'].values
         })
+
 
     
     st.markdown("""
