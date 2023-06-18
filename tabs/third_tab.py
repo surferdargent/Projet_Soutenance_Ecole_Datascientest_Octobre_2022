@@ -12,6 +12,9 @@ from sklearn.model_selection import GridSearchCV
 import io
 import pickle
 
+title = "Préprocessing et Modélisation"
+sidebar_name = "Préprocessing et Modélisation"
+
 def run():
     st.title("Préprocessing et Modélisation")
 
