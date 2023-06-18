@@ -381,15 +381,21 @@ def run():
     df3, best_model_3 = split_normalisation(new_df_preprocessing_demo)
     df4, best_model_4 = split_normalisation(new_df_preprocessing_demo)
     df5, best_model_5 = split_normalisation(new_df_preprocessing_demo)
+    
+    lengths = [df1.shape[0], df2.shape[0], df3.shape[0], df4.shape[0], df5.shape[0]]
+    
+    if len(set(lengths)) != 1:
+        st.error("Les DataFrames n'ont pas la même longueur.")
+    else:
+        df_scores = pd.DataFrame({
+            'Modèle': ['Features d\'origine', 'Features d\'origine + Pts ELO', 'Features d\'origine + Pts ELO + Diff. de classement', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois'],
+            'Scores 1': df1['Scores'].values,
+            'Scores 2': df2['Scores'].values,
+            'Scores 3': df3['Scores'].values,
+            'Scores 4': df4['Scores'].values,
+            'Scores 5': df5['Scores'].values
+        })
 
-    df_scores = pd.DataFrame({
-    'Modèle': ['Features d\'origine', 'Features d\'origine + Pts ELO', 'Features d\'origine + Pts ELO + Diff. de classement', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois'],
-    'Scores 1': df1['Scores'].values,
-    'Scores 2': df2['Scores'].values,
-    'Scores 3': df3['Scores'].values,
-    'Scores 4': df4['Scores'].values,
-    'Scores 5': df5['Scores'].values
-})
     
     st.markdown("""
         Nous observons que le Random Forest obtient les meilleurs résultats, mais nous pouvons encore les améliorer en optimisant les hyperparamètres.
