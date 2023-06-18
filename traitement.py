@@ -43,16 +43,17 @@ def predict(df):
     data = data.dropna()
 
     # Synthèse des prévisions des bookmakers dans un dataframe 
+    data = data.copy()
     data['Bkm_prediction'] = data[['B365W','B365L']].apply(lambda x: np.argmin(x), axis=1)
     data['Bkm_prediction'] = data['Bkm_prediction'].replace(to_replace=[0, 1], value=['V', 'D'])
 
     # Transformer les valeurs de la variable Winner en "V" comme victoire pour comparer les prév et le réel
-    data['Victoire_reel'] = "V"
-    data['Predict_bkm'] = data[['Bkm_prediction']] 
-    data["Bkm_predict_vict"] = data["Predict_bkm"].replace({"D":0,"V":1}).astype(float)
+    data.loc[:, 'Victoire_reel'] = "V"
+    data.loc[:, 'Predict_bkm'] = data['Bkm_prediction']
+    data.loc[:, 'Bkm_predict_vict'] = data['Predict_bkm'].replace({"D": 0, "V": 1}).astype(float)
 
     # Le pourcentage de bonnes prédictions
-    data['Bkm_prediction'] = data['Victoire_reel']==data['Bkm_prediction']
+    data.loc[:, 'Bkm_prediction'] = data['Victoire_reel'] == data['Bkm_prediction']
     label = data['Bkm_prediction'].value_counts().index
     fig = plt.figure(figsize=(2,2))
     plt.pie(x=data['Bkm_prediction'].value_counts().values, 
@@ -66,7 +67,7 @@ def predict(df):
  
 
     # Diviser le dataframe en deux en ayant un joueur par ligne en créant une colonne Win en mettant 0 si le joueur est perdant et 1 si il est gagnant 
-    data['RankDiff'] = data.LRank - data.WRank
+    data.loc[:, 'RankDiff'] = data['LRank'] - data['WRank']
 
     winners = pd.DataFrame(data = [data.Winner, data.Location, data.Tournament, data.Date, data["Best of"], data.Series, data.Court, data.Surface, data.Round, data.WRank, data.Wsets, data.elo_winner,data.B365W, data.RankDiff,data["Bkm_predict_vict"]]).T
     winners.columns =['Player', 'Location', 'Tournament', 'Year', 'BestOf', 'Series', 'Court', 'Surface','Round', 'Rank', 'SetsWon', 'EloPoints', 'B365','RankDiff','Predict_W_Bkm']
@@ -516,7 +517,7 @@ data1,data2,data3,data4,data5 = creat_df()
 
 selections = ["Features d'origine" , "Features d'origine + Pts ELO", "Features d'origine + Pts ELO + Diff. de classement","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"]
 
-selection = st.radio("", selections,index=4)
+selection = st.radio("Sélectionnez", selections,index=4)
 
 if selection == selections[0]: 
     st.write(data1)

@@ -49,7 +49,19 @@ def run():
         
         """
     )
+    
+    from tabs import second_tab
+
+    # Appeler la méthode run() de DataProcessor dans second_tab
+    second_tab.run()
     new_df_preprocessing = data_processor.processed_data
+    
+
+    # new_df_preprocessing = pd.DataFrame()  # Initialisez new_df_preprocessing avec un DataFrame vide ou vos données réelles
+
+    # if new_df_preprocessing is not None:
+    #         new_df_preprocessing['Year'] = pd.to_datetime(new_df_preprocessing['Year'])
+
     # new_df_preprocessing = pd.read_csv('df_variables_enrichies.csv',parse_dates=['Year'])
     new_df_preprocessing['Year'] = pd.to_datetime(new_df_preprocessing['Year'])
     new_df_preprocessing['Year'] = new_df_preprocessing['Year']
@@ -462,7 +474,7 @@ def run():
     data5 =  pd.concat([df6,df1,df2,df3,df4,df5],axis=1)
     selections = ["Features d'origine" , "Features d'origine + Pts ELO", "Features d'origine + Pts ELO + Diff. de classement","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois","Features d'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois"]
 
-    selection = st.radio("", selections,index= 4)
+    selection = st.radio("Sélectionnez", selections,index= 4)
 
     if selection == selections[0]: 
         st.write(data1)
