@@ -146,6 +146,8 @@ class DataProcessor:
 
             """
         )
+        # Diviser le dataframe en deux en ayant un joueur par ligne en créant une colonne Win en mettant 0 si le joueur est perdant et 1 si il est gagnant
+        data['RankDiff'] = data.LRank - data.WRank
 
         # Diviser le dataframe en deux en ayant un joueur par ligne en créant une colonne Win en mettant 0 si le joueur est perdant et 1 s'il est gagnant
         winners = data[['Winner', 'Location', 'Tournament', 'Date', 'Best of', 'Series', 'Court', 'Surface',

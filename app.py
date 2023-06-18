@@ -33,6 +33,8 @@ TABS = OrderedDict(
 
 
 def run():
+    
+    
     """ Début du promgramme"""
     st.sidebar.image(
         "https://dst-studio-template.s3.eu-west-3.amazonaws.com/logo-datascientest.png",
