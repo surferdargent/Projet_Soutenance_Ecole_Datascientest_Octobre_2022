@@ -301,35 +301,60 @@ def run():
          Une première approche consiste à utiliser de façon sélective les différents paramètres.
     """)
 
-    df1 = df_scores[df_scores['Noms'] == 'Features d\'origine ']
-    df2 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO']
-    df3 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement']
-    df4 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois']
-    df5 = df_scores[df_scores['Noms'] == 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois']
+    import itertools
 
-    df1, best_model_1 = split_normalisation(new_df_preprocessing_demo)
-    df2, best_model_2 = split_normalisation(new_df_preprocessing_demo)
-    df3, best_model_3 = split_normalisation(new_df_preprocessing_demo)
-    df4, best_model_4 = split_normalisation(new_df_preprocessing_demo)
-    df5, best_model_5 = split_normalisation(new_df_preprocessing_demo)
+    def get_best_model_score(data, variables):
+        X_train, y_train, X_test, y_test = split_normalisation(data)
+    
+        models = {
+            'Logistic Regression': LogisticRegression(random_state=123),
+            'KNeighbors': KNeighborsClassifier(),
+            'Random Forest': RandomForestClassifier(random_state=123)
+        }
+    
+        best_scores = {}
+        best_variable_combinations = {}
+    
+        # Générer toutes les combinaisons de variables
+        for model_name, model in models.items():
+            best_score = 0
+            best_variables = None
+    
+            for r in range(1, len(variables) + 1):
+                combinations = itertools.combinations(variables, r)
+    
+                for combination in combinations:
+                    # Sélectionner les variables de la combinaison
+                    selected_variables = list(combination)
+    
+                    # Entraîner le modèle avec les variables sélectionnées
+                    X_train_selected = X_train[selected_variables]
+                    X_test_selected = X_test[selected_variables]
+    
+                    model.fit(X_train_selected, y_train)
+                    score = model.score(X_test_selected, y_test)
+    
+                    # Mettre à jour le meilleur score et les meilleures variables
+                    if score > best_score:
+                        best_score = score
+                        best_variables = selected_variables
+    
+            best_scores[model_name] = best_score
+            best_variable_combinations[model_name] = best_variables
+    
+        return best_scores, best_variable_combinations
+    
+    variables = ['EloPoints', 'RankDiff', 'Ratio_tours_6_mois', 'Ratio_victoire_6_mois', 'Ratio_surface_6_mois', 'Ratio_tournois_6_mois',
+             'Ratio_tournois_18_mois', 'Ratio_tours_18_mois', 'Ratio_victoire_18_mois', 'Ratio_surface_18_mois']
 
-    lengths = [len(df1['Scores'].values), len(df2['Scores'].values), len(df3['Scores'].values), len(df4['Scores'].values),
-               len(df5['Scores'].values)]
+    best_scores, best_variable_combinations = get_best_model_score(new_df_preprocessing, variables)
+    
+    for model_name, score in best_scores.items():
+        best_variables = best_variable_combinations[model_name]
+        st.write(f"Meilleur score pour le modèle {model_name}: {score}")
+        st.write(f"Variables correspondantes : {best_variables}")
 
-    if len(set(lengths)) != 1:
-        st.error("Les tableaux de scores n'ont pas la même longueur.")
-    else:
-        df_scores = pd.DataFrame({
-            'Modèle': ['Features d\'origine', 'Features d\'origine + Pts ELO',
-                       'Features d\'origine + Pts ELO + Diff. de classement',
-                       'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois',
-                       'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois'],
-            'Scores 1': df1['Scores'].values,
-            'Scores 2': df2['Scores'].values,
-            'Scores 3': df3['Scores'].values,
-            'Scores 4': df4['Scores'].values,
-            'Scores 5': df5['Scores'].values
-        })
+     
 
     st.markdown("""
         Nous observons que le Random Forest obtient les meilleurs résultats, mais nous pouvons encore les améliorer en optimisant les hyperparamètres.
