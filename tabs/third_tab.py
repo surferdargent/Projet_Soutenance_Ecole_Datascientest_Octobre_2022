@@ -388,13 +388,14 @@ def run():
         st.error("Les tableaux de scores n'ont pas la même longueur.")
     else:
         df_scores = pd.DataFrame({
-            'Modèle': ['Features d\'origine', 'Features d\'origine + Pts ELO', 'Features d\'origine + Pts ELO + Diff. de classement', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois'],
-            'Scores 1': df1['Scores'].values,
-            'Scores 2': df2['Scores'].values,
-            'Scores 3': df3['Scores'].values,
-            'Scores 4': df4['Scores'].values,
-            'Scores 5': df5['Scores'].values
-        })
+    'Modèle': ['Features d\'origine', 'Features d\'origine + Pts ELO', 'Features d\'origine + Pts ELO + Diff. de classement', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois', 'Features d\'origine + Pts ELO + Diff. de classement + Moy.roulantes 6 mois + Moy.roulantes 18 mois'],
+    'Scores 1': df1['Scores'].values,
+    'Scores 2': df2['Scores'].values,
+    'Scores 3': df3['Scores'].values,
+    'Scores 4': df4['Scores'].values,
+    'Scores 5': df5['Scores'].values
+})
+
 
 
     
